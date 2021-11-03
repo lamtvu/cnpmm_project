@@ -1,0 +1,18 @@
+POST  http://localhost:3000/api/customer/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "email":"lamtvu@gmai.com",
+    "phoneNumber":"123123123",
+    "name":"thanh lam",
+    "password":"123123123"
+}
+
+###
+POST  http://localhost:3000/api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "lamtvu@gmai.com",
+    "password":"123123123"
+}
