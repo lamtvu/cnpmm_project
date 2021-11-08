@@ -7,7 +7,7 @@ const categoryRoute = Router();
 categoryRoute.post(
   "/add",
   // authMiddleWare.verifyToken,
-  categoryValidator.createCategoryValidator(),
+  [categoryValidator.createCategoryValidator(), authMiddleWare.verifyToken],
   categoryController.createCategory
 );
 categoryRoute.delete("/delete/:id", categoryController.deleteCategory);

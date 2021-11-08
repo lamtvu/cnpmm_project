@@ -2,6 +2,7 @@ const { SHA256 } = require('crypto-js');
 const customerModel = require('./../models/customers.model.js');
 const employeeModel = require('./../models/employees.model.js');
 const { generateToken } = require('./../services/jwt.service');
+require('dotenv').config();
 
 const login = async (req, res) => {
     const { username, password } = req.body;

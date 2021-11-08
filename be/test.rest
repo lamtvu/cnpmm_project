@@ -22,7 +22,7 @@ Content-Type: application/json
 ###
 POST http://localhost:3000/api/category/add HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTg0ZDc5MzczNDA4Mzk2Nzc5NWEyZmUiLCJyb2xlIjoxLCJpYXQiOjE2MzYwOTU5MDYsImV4cCI6MTYzNjE4MjMwNn0.B1Q6VvKZthkrYmBSBmVJTmGV-kXKYShTeibz1z1Pwjk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTg5MzYzYTMwZWM4Y2Y0ZWQ5NmM1NmUiLCJyb2xlIjoxLCJpYXQiOjE2MzYzODI2NzAsImV4cCI6MTYzNjQ2OTA3MH0.rD94s7hmgrUTWubmKbpUEoOL32p_xnu0QxLuwHkWcWY
 
 {
     "name": "Casio2"
