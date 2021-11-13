@@ -2,7 +2,7 @@ POST  http://localhost:3000/api/customer/register HTTP/1.1
 Content-Type: application/json
 
 {
-    "email":"lamtvu2@gmai.com",
+    "email":"lamtvu3@gmai.com",
     "phoneNumber":"123123123",
     "name":"thanh lam",
     "password":"123123123"
@@ -13,7 +13,7 @@ POST  http://localhost:3000/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "lamtvu2@gmai.com",
+    "username": "lamtvu3@gmai.com",
     "password":"123123123"
 }
 
@@ -22,10 +22,10 @@ Content-Type: application/json
 ###
 POST http://localhost:3000/api/category/add HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTg5MzYzYTMwZWM4Y2Y0ZWQ5NmM1NmUiLCJyb2xlIjoxLCJpYXQiOjE2MzYzODI2NzAsImV4cCI6MTYzNjQ2OTA3MH0.rD94s7hmgrUTWubmKbpUEoOL32p_xnu0QxLuwHkWcWY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MThhMGJhYTY0OGMzODBjZGExNDQyYjMiLCJyb2xlIjoxLCJpYXQiOjE2MzY0MzY5MTIsImV4cCI6MTYzNjUyMzMxMn0.iwBAHWxTduGnuKzex6PIT_PRxWhvR-MB1p0UVgdyUp8
 
 {
-    "name": "Casio2"
+    "name": "Casio3"
 }
 
 // delete category
@@ -51,6 +51,48 @@ Content-Type: application/json
 ###
 GET http://localhost:3000/api/category/get-category/6184e50cff44164d7bc10975 HTTP/1.1
 Content-Type: application/json
+
+// -----------------***Producer***--------------------
+###
+POST http://localhost:3000/api/producer/add HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MThhMGJhYTY0OGMzODBjZGExNDQyYjMiLCJyb2xlIjoxLCJpYXQiOjE2MzY3MTk3MTgsImV4cCI6MTYzNjgwNjExOH0.DZo_NFegE7QsQALaA3l6ydh-_3UMAk7PMbRN9Fth5Zs
+
+{
+    "name": "Apple"
+}
+
+// delete producer
+###
+DELETE  http://localhost:3000/api/producer/delete/618e5c843a3dbdca636004d2 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MThhMGJhYTY0OGMzODBjZGExNDQyYjMiLCJyb2xlIjoxLCJpYXQiOjE2MzY3MTk3MTgsImV4cCI6MTYzNjgwNjExOH0.DZo_NFegE7QsQALaA3l6ydh-_3UMAk7PMbRN9Fth5Zs
+
+// update producer
+###
+PUT http://localhost:3000/api/producer/update/6184da0f7126ef5e8a1796d9 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MThhMGJhYTY0OGMzODBjZGExNDQyYjMiLCJyb2xlIjoxLCJpYXQiOjE2MzY3MTk3MTgsImV4cCI6MTYzNjgwNjExOH0.DZo_NFegE7QsQALaA3l6ydh-_3UMAk7PMbRN9Fth5Zs
+
+{
+    "name": "OppoWatch"
+}
+
+//get all producer
+###
+GET http://localhost:3000/api/producer/get-all HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MThhMGJhYTY0OGMzODBjZGExNDQyYjMiLCJyb2xlIjoxLCJpYXQiOjE2MzY3MTk3MTgsImV4cCI6MTYzNjgwNjExOH0.DZo_NFegE7QsQALaA3l6ydh-_3UMAk7PMbRN9Fth5Zs
+
+// get producer by id
+###
+GET http://localhost:3000/api/producer/get-producer/618e5da43a3dbdca636004d5 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MThhMGJhYTY0OGMzODBjZGExNDQyYjMiLCJyb2xlIjoxLCJpYXQiOjE2MzY3MTk3MTgsImV4cCI6MTYzNjgwNjExOH0.DZo_NFegE7QsQALaA3l6ydh-_3UMAk7PMbRN9Fth5Zs
+
+
+//---
+
 
 //---------------------***Product***---------------------
 //create product
@@ -97,22 +139,43 @@ Content-Type: application/json
 GET http://localhost:3000/api/product/get-product/61862499fc4ae53a8b9d0b87 HTTP/1.1
 Content-Type: application/json
 
+
+///-------------------Discount--------------------
+
+// create discount
+###
+POST http://localhost:3000/api/discount/add HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MThhMGJhYTY0OGMzODBjZGExNDQyYjMiLCJyb2xlIjoxLCJpYXQiOjE2MzY3MjY0OTgsImV4cCI6MTYzNjgxMjg5OH0.5OcEegAyl3seRlonKfSA1jq-Clv2jdcFwGRGl-tshfY
+
+{
+    "products": ["61862499fc4ae53a8b9d0b87"],
+    "value": 0.1,
+    "endDate": 1637341200000
+
+}
+
 ///-------------------------****Orders****---------------
 
 //create order
 ###
 POST http://localhost:3000/api/order/add HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MThhMGJhYTY0OGMzODBjZGExNDQyYjMiLCJyb2xlIjoxLCJpYXQiOjE2MzY3MjY0OTgsImV4cCI6MTYzNjgxMjg5OH0.5OcEegAyl3seRlonKfSA1jq-Clv2jdcFwGRGl-tshfY
 
 {
     "customer": "6184d793734083967795a2fe",
-    "product": "61862499fc4ae53a8b9d0b87",
-    "count": 2,
+    "orders":[{
+        "product": "61862499fc4ae53a8b9d0b87",
+        "count": 4
+    },
+    {
+        "product": "618624ebfc4ae53a8b9d0b8a",
+        "count": 3
+    }],
     "address": "quận 1",
     "receiver": "hoang nam",
-    "phoneReceiver": "0789687961",
-    "totalPrice": 100000
-
+    "phoneReceiver": "0789687961"
 }
 
 // update order

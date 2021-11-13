@@ -1,22 +1,50 @@
 const orderModel = require("./../models/orders.model");
+const discountModel = require("./../models/discounts.model");
+const productModel = require("./../models/products.model");
 const { validationResult } = require("express-validator");
+
+const getMoneyDiscount = async (Orders) => {
+  const data = await Promise.all(
+    Orders.map(async (order) => {
+      const discounts = await discountModel.find({ products: order.product });
+
+      const totalDiscount = discounts.reduce((previousValue, currentValue) => {
+        return previousValue + currentValue.value;
+      }, 0);
+      const product = await productModel.findById(order.product);
+      return {
+        product: order.product,
+        count: order.count,
+        discount: totalDiscount,
+        price: (product.price - totalDiscount * product.price) * order.count,
+      };
+    })
+  );
+  return data;
+};
 
 const createOrder = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ status: 400, ...errors });
   }
-  const newOrder = new orderModel({
-    customer: req.body.customer,
-    product: req.body.product,
-    count: req.body.count,
+  const orders = await getMoneyDiscount(req.body.orders);
+  console.log(orders);
+  const newOrder = {
+    customer: req.userData._id,
     address: req.body.address,
+    orders: orders,
     receiver: req.body.receiver,
     phoneReceiver: req.body.phoneReceiver,
-    status: req.body.status,
-    totalPrice: req.body.totalPrice,
-  });
-  await orderModel.create(newOrder, (err) => {
+    status: 1,
+    totalPrice: orders.reduce((previousValue, currentValue) => {
+      console.log("previous", previousValue);
+      console.log("current", currentValue);
+      return previousValue + currentValue.price;
+    }, 0),
+  };
+
+  orderModel.create(newOrder, (err) => {
     if (err) {
       return res.status(400).json({ status: 400, errors: [{ msg: err }] });
     }

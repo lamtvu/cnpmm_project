@@ -1,25 +1,30 @@
 const productModel = require("./../models/products.model");
 const { validationResult } = require("express-validator");
+const { uploadImage } = require("../services/uploadimage.service");
 
 const createProduct = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ status: 400, ...errors });
   }
-  const newProduct = new productModel({
-    category: req.body.category,
-    name: req.body.name,
-    description: req.body.description,
-    detail: req.body.detail,
-    image: req.body.image,
-    price: req.body.price,
-  });
-  await productModel.create(newProduct, (err) => {
-    if (err) {
-      return res.status(400).json({ status: 400, errors: [{ msg: err }] });
-    }
-    return res.status(200).json({ status: 200, data: null });
-  });
+  if (req.files["Image"] != null) {
+    var addImage = req.files["Image"][0];
+    const urlImage = await uploadImage(addImage.filename, "upload/");
+    const newProduct = {
+      category: req.body.category,
+      name: req.body.name,
+      description: req.body.description,
+      detail: req.body.detail,
+      image: urlImage,
+      price: req.body.price,
+    };
+    await productModel.create(newProduct, (err) => {
+      if (err) {
+        return res.status(400).json({ status: 400, errors: [{ msg: err }] });
+      }
+      return res.status(200).json({ status: 200, data: null });
+    });
+  }
 };
 
 const deleteProduct = async (req, res) => {
