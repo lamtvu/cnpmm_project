@@ -1,7 +1,6 @@
 const bucket = require("./../config/firebase/firebase");
 const fs = require("fs");
 const uuid = require("uuid-v4");
-
 const uploadImage = async (name, folder) => {
   const path = "./upload/" + name;
   const metadata = {

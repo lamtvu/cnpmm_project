@@ -7,15 +7,15 @@ const createProduct = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ status: 400, ...errors });
   }
-  if (req.files["Image"] != null) {
-    var addImage = req.files["Image"][0];
+  if (req.files["image"] != null) {
+    var addImage = req.files["image"][0];
     const urlImage = await uploadImage(addImage.filename, "upload/");
     const newProduct = {
       category: req.body.category,
       name: req.body.name,
       description: req.body.description,
       detail: req.body.detail,
-      image: urlImage,
+      image: (req.body.image = urlImage),
       price: req.body.price,
     };
     await productModel.create(newProduct, (err) => {
