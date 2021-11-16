@@ -1,8 +1,10 @@
+import { useCookies } from "react-cookie";
 import { useRoutes, BrowserRouter as Router } from "react-router-dom";
-import { mainRoutes } from "./routes";
+import { adminRoutes, mainRoutes } from "./routes";
 
 function App() {
-  const routing = useRoutes([...mainRoutes]);
+  const [cookies] = useCookies(['auth'])
+  const routing = useRoutes([...mainRoutes, ...adminRoutes(cookies.auth)]);
   return (
     <>
       {routing}
@@ -12,7 +14,7 @@ function App() {
 const AppWrapper = () => {
   return (
     <Router>
-      <App/>
+      <App />
     </Router>
   )
 }
