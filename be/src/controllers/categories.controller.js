@@ -19,13 +19,12 @@ const createCategory = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
   const categoryId = req.params.categoryId;
-  await categoryModel.deleteOne(categoryId, (err) => {
+  categoryModel.deleteOne({ _id: categoryId }, (err) => {
     if (err) {
       return res.status(400).json({ status: 400, errors: [{ msg: err }] });
     }
     return res.status(200).json({ status: 200, data: null });
-  });
-  await categoryModel.updateMany({ _id: categoryId });
+  })
 };
 const updateCategory = async (req, res) => {
   if (!req.body) {

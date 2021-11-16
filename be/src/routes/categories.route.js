@@ -10,7 +10,7 @@ categoryRoute.post(
   [categoryValidator.createCategoryValidator(), authMiddleWare.verifyToken],
   categoryController.createCategory
 );
-categoryRoute.delete("/delete/:id", categoryController.deleteCategory);
+categoryRoute.delete("/delete/:categoryId", categoryController.deleteCategory);
 categoryRoute.put(
   "/update/:categoryId",
   categoryValidator.createCategoryValidator(),
