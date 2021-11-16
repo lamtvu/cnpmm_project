@@ -8,20 +8,14 @@ const login = async (req, res) => {
     const { username, password } = req.body;
     try {
         //employee
-        const employee = await employeeModel.findOne({ username });
+        const employee = await employeeModel.findOne({ username: username, password: SHA256(password).toString() });
         if (!employee) {
             // custormer
-            const customer = await customerModel.findOne({ email: username });
-
-            if (!customer) return res.status(400).json({ msg: 'Invalid gmail' });
-            if (customer.password != SHA256(password).toString()) return res.status(400).json({ msg: 'Invalid password' });
-
+            const customer = await customerModel.findOne({ email: username, password: SHA256(password).toString() });
+            if (!customer) return res.status(400).json({ msg: 'Invalid username/email or password' });
             const token = await generateToken({ _id: customer._id, role: 1 }, process.env.SECRET_KEY, process.env.TOKEN_LIFE);
             return res.status(200).json({ msg: 'Success', data: { token, role: 1 } });
         }
-
-        if (employee.password != SHA256(password).toString()) return res.status(400).json({ msg: 'Invalid password' });
-        
         const token = await generateToken({ _id: employee._id, role: 0 }, process.env.SECRET_KEY, process.env.TOKEN_LIFE);
         return res.status(200).json({ msg: 'Success', data: { token, role: 0 } });
     } catch {

@@ -32,17 +32,10 @@ const updateCategory = async (req, res) => {
     return res.status(400).send({ msg: "Data to update can not empty" });
   }
   const categoryId = req.params.categoryId;
-
-  await categoryModel
-    .updateOne(categoryId, req.body, {
-      useFindAndModify: false,
-    })
+  categoryModel
+    .updateOne({ _id: categoryId }, req.body, { useFindAndModify: false, })
     .then((data) => {
-      if (!data) {
-        res.status(400).send({ msg: "Cannot update category" });
-      } else {
-        res.status(200).send({ msg: "Update successful !!!" });
-      }
+      res.status(200).send({ msg: "Update successful !!!" });
     })
     .catch((err) => {
       res.status(500).send({ msg: "Error update" });

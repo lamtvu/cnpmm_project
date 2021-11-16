@@ -12,7 +12,7 @@ categoryRoute.post(
 );
 categoryRoute.delete("/delete/:id", categoryController.deleteCategory);
 categoryRoute.put(
-  "/update/:id",
+  "/update/:categoryId",
   categoryValidator.createCategoryValidator(),
   categoryController.updateCategory
 );

@@ -8,7 +8,7 @@ const registerValidator = () => {
             .isEmail().withMessage('invalid email').bail()
             .custom(value => {
                 return customerModel.findOne({ email: value }).then(customer => {
-                    if (customer) Promise.reject('E-mail already in use')
+                    if (customer) return Promise.reject('E-mail already in use')
                 })
             }),
         body('phoneNumber')
