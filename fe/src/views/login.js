@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { login } from '../api/userApi'
 import Logo from '../components/logo'
-import { Cookies } from 'react-cookie'
+import { useCookies } from 'react-cookie'
 
 const Login = () => {
     const [banner, setBanner] = useState(null);
     const [loginData, setLoginData] = useState({ username: '', password: '' })
     const [loginState, setLoginSate] = useState({ status: 0, err: '' })
+    const [cookies, setCookies] = useCookies(['auth']);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -28,8 +29,7 @@ const Login = () => {
         setLoginSate({ ...loginState, status: 1 });
         try {
             const res = await login(loginData);
-            new Cookies().set('auth', res.data.data)
-            console.log(res.data.data.role)
+            setCookies('auth', res.data.data);
             if (res.data.data.role === 1) navigate('/');
             else navigate('/admin')
 

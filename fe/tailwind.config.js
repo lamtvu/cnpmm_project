@@ -5,6 +5,16 @@ module.exports = {
     extend: {
       transitionProperty: {
         'height': 'height'
+      },
+      keyframes: {
+        runleft: {
+          '0%': { marginLeft: '0%', marginRight: '100%' },
+          '50%': { marginLeft: '25%', marginRight: '0%' },
+          '100%': { marginLeft: '100%', marginRight: '0%' }
+        },
+      },
+      animation: {
+        runleft: 'runleft 3s ease-in-out infinite',
       }
     },
   },

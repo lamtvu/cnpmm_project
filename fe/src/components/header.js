@@ -35,6 +35,10 @@ const Header = () => {
                         {`Hi, lamtvu`}
                         <div className='absolute z-10 bg-white left-1/2 top-full transform -translate-x-1/2 hidden
                         group-hover:block text-gray-500 rounded-lg p-1 shadow-xl'>
+                            {cookies.auth && cookies.auth.role === 0 && (
+                                <div className='text-lg px-8 py-2 font-semibold hover:bg-gray-100 rounded-lg'>
+                                    <Link to='/admin'>Managements</Link>
+                                </div>)}
                             <div className='text-lg px-8 py-2 font-semibold hover:bg-gray-100 rounded-lg'>
                                 <Link to='/login'>Information</Link>
                             </div>
@@ -44,16 +48,19 @@ const Header = () => {
                             </div>
                         </div>
                     </div>}
-                    <div className='text-gray-400 cursor-pointer hover:text-gray-500 transform'>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
+                    {cookies.auth?.role !== 0 && <div className='flex items-center gap-4'>
+                        <div className='text-gray-400 cursor-pointer hover:text-gray-500 transform'>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                        </div>
+                        <div className='text-gray-400 cursor-pointer hover:text-gray-500 transform'>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                            </svg>
+                        </div>
                     </div>
-                    <div className='text-gray-400 cursor-pointer hover:text-gray-500 transform'>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                        </svg>
-                    </div>
+                    }
                 </div>
             </div>
         </div >

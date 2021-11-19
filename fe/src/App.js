@@ -4,7 +4,7 @@ import { adminRoutes, mainRoutes } from "./routes";
 
 function App() {
   const [cookies] = useCookies(['auth'])
-  const routing = useRoutes([...mainRoutes, ...adminRoutes(cookies.auth)]);
+  const routing = useRoutes([...mainRoutes(cookies.auth), ...adminRoutes(cookies.auth)]);
   return (
     <>
       {routing}

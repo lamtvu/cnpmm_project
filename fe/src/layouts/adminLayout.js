@@ -9,9 +9,11 @@ const linkDatas = [
     { label: 'brands', link: '/admin/brands' },
     { label: 'products', link: '/admin/products' },
     { label: 'customers', link: '/admin/customers' },
+    { label: 'orders', link: '/admin/orders' },
 ]
 
 const AdminLayout = () => {
+    console.log('admin')
     return (
         <div>
             <Header />

@@ -41,7 +41,9 @@ export const getCagtegoriesAction = () => {
             console.log(err);
             if (err.response) {
                 dispatch(categoriesError(err.response.data.msg));
+                return;
             }
+            dispatch(categoriesError('Error network'));
         }
     }
 }
@@ -56,7 +58,9 @@ export const addCategoryAction = (data) => {
             console.log(err)
             if (err.response) {
                 dispatch(categoriesError(err.response.data.msg));
+                return;
             }
+            dispatch(categoriesError('Error network'));
         }
     }
 }
@@ -68,10 +72,11 @@ export const deleteCategoryAction = (id) => {
             await deleteCategoryAPI(id);
             dispatch(getCagtegoriesAction());
         } catch (err) {
-            console.log(err)
             if (err.response) {
                 dispatch(categoriesError(err.response.data.msg));
+                return;
             }
+            dispatch(categoriesError('Error network'));
         }
     }
 }
@@ -86,10 +91,11 @@ export const updateCategoryAction = (data) => {
             await updateCategoryAPI(selected._id, data);
             dispatch(getCagtegoriesAction());
         } catch (err) {
-            console.log(err)
+            console.log(err.response)
             if (err.response) {
                 dispatch(categoriesError(err.response.data.msg));
             }
+            dispatch(categoriesError(err.response.data.msg));
         }
     }
 }
