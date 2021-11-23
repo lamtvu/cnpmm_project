@@ -60,9 +60,12 @@ const calculatorOrderPrice = async (req, res) => {
       orders.map(async (order) => {
         const discounts = await discountModel.find({ products: order.product });
 
-        const totalDiscount = discounts.reduce((previousValue, currentValue) => {
-          return previousValue + currentValue.value;
-        }, 0);
+        const totalDiscount = discounts.reduce(
+          (previousValue, currentValue) => {
+            return previousValue + currentValue.value;
+          },
+          0
+        );
         const product = await productModel.findById(order.product);
         return {
           product: product,
@@ -70,19 +73,20 @@ const calculatorOrderPrice = async (req, res) => {
           discount: totalDiscount,
           price: (product.price - totalDiscount * product.price) * order.count,
         };
-      }))
+      })
+    );
 
     const data = {
       orders: orderPrices,
       totalPrice: orderPrices.reduce((previousValue, currentValue) => {
         return previousValue + currentValue.price;
       }, 0),
-    }
+    };
     return res.status(200).json(data);
   } catch {
-    return res.status(500).json({ msg: 'Internal Server Error' })
+    return res.status(500).json({ msg: "Internal Server Error" });
   }
-}
+};
 
 const deleteOrder = async (req, res) => {
   const orderId = req.params.orderId;
@@ -136,24 +140,29 @@ const getOrder = (req, res) => {
 
 const getOrders = async (req, res) => {
   try {
-    const orderDetails = await orderModel.find().populate('orders.product').populate('customer');
-    console.log(orderDetails)
-    res.status(200).json(orderDetails)
+    const orderDetails = await orderModel
+      .find()
+      .populate("orders.product")
+      .populate("customer");
+    console.log(orderDetails);
+    res.status(200).json(orderDetails);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send({ msg: "Internal Server Error" });
   }
-}
+};
 
 const getMyOrders = async (req, res) => {
   const userId = req.userData._id;
   try {
-    const orderDetails = await orderModel.find({ customer: userId }).populate('orders.product');
-    res.status(200).json(orderDetails)
+    const orderDetails = await orderModel
+      .find({ customer: userId })
+      .populate("orders.product");
+    res.status(200).json(orderDetails);
   } catch (e) {
     res.status(500).send({ msg: "Internal Server Error", e });
   }
-}
+};
 
 module.exports = {
   createOrder,

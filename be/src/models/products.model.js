@@ -9,6 +9,7 @@ const productSchema = new Schema(
     detail: { type: String, required: true },
     image: [{ type: String }],
     price: { type: Number, required: true },
+    discount: { type: Schema.Types.ObjectId, ref: "discounts" },
   },
   { timestamps: {} }
 );

@@ -26,7 +26,6 @@ const createDiscount = (req, res) => {
     return res.status(400).json({ status: 400, ...errors });
   }
   const newDiscount = {
-    products: req.body.products,
     value: req.body.value,
     endDate: req.body.endDate,
   };

@@ -31,7 +31,11 @@ productRoute.post(
   productController.createProduct
 );
 productRoute.delete("/delete/:productId", productController.deleteProduct);
-productRoute.put("/update/:productId", productController.updateProduct);
+productRoute.put(
+  "/update/:productId",
+  cpUpload,
+  productController.updateProduct
+);
 productRoute.get("/get-all", productController.getProduct);
 productRoute.post("/get", productController.getProducts);
 productRoute.post("/get-by-ids", productController.getByIds);

@@ -10,13 +10,13 @@ discountRoute.post(
   discountController.createDiscount
 );
 discountRoute.delete(
-  "/delete/:id",
+  "/delete/:discountId",
   authMiddleware.verifyToken,
   discountController.deleteDiscount
 );
 
 discountRoute.put(
-  "/update/:id",
+  "/update/:discountId",
   authMiddleware.verifyToken,
   discountController.updateDiscount
 );
