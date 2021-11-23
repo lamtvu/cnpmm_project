@@ -30,8 +30,11 @@ productRoute.post(
   authMiddleware.verifyToken,
   productController.createProduct
 );
-productRoute.delete("/delete/:id", productController.deleteProduct);
-productRoute.put("/update/:id", productController.updateProduct);
+productRoute.delete("/delete/:productId", productController.deleteProduct);
+productRoute.put("/update/:productId", productController.updateProduct);
 productRoute.get("/get-all", productController.getProduct);
+productRoute.post("/get", productController.getProducts);
+productRoute.post("/get-by-ids", productController.getByIds);
+productRoute.get("/search", productController.searchProducts);
 productRoute.get("/get-product/:id", productController.getProduct);
 module.exports = productRoute;

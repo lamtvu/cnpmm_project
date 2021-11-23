@@ -7,7 +7,6 @@ const getMoneyDiscount = async (Orders) => {
   const data = await Promise.all(
     Orders.map(async (order) => {
       const discounts = await discountModel.find({ products: order.product });
-
       const totalDiscount = discounts.reduce((previousValue, currentValue) => {
         return previousValue + currentValue.value;
       }, 0);
@@ -38,8 +37,6 @@ const createOrder = async (req, res) => {
     phoneReceiver: req.body.phoneReceiver,
     status: 1,
     totalPrice: orders.reduce((previousValue, currentValue) => {
-      console.log("previous", previousValue);
-      console.log("current", currentValue);
       return previousValue + currentValue.price;
     }, 0),
   };
@@ -52,6 +49,41 @@ const createOrder = async (req, res) => {
   });
 };
 
+const calculatorOrderPrice = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ status: 400, ...errors });
+  }
+  try {
+    const { orders } = req.body;
+    const orderPrices = await Promise.all(
+      orders.map(async (order) => {
+        const discounts = await discountModel.find({ products: order.product });
+
+        const totalDiscount = discounts.reduce((previousValue, currentValue) => {
+          return previousValue + currentValue.value;
+        }, 0);
+        const product = await productModel.findById(order.product);
+        return {
+          product: product,
+          count: order.count,
+          discount: totalDiscount,
+          price: (product.price - totalDiscount * product.price) * order.count,
+        };
+      }))
+
+    const data = {
+      orders: orderPrices,
+      totalPrice: orderPrices.reduce((previousValue, currentValue) => {
+        return previousValue + currentValue.price;
+      }, 0),
+    }
+    return res.status(200).json(data);
+  } catch {
+    return res.status(500).json({ msg: 'Internal Server Error' })
+  }
+}
+
 const deleteOrder = async (req, res) => {
   const orderId = req.params.orderId;
   await orderModel.deleteOne(orderId, (err) => {
@@ -62,14 +94,15 @@ const deleteOrder = async (req, res) => {
   });
   await orderModel.updateMany({ _id: orderId });
 };
+
 const updateOrder = async (req, res) => {
   if (!req.body) {
     return res.status(400).send({ msg: "Data to update can not empty" });
   }
-  const orderId = req.params.orderId;
+  const orderId = req.params.id;
 
   await orderModel
-    .updateOne(orderId, req.body, {
+    .updateOne({ _id: orderId }, req.body, {
       useFindAndModify: false,
     })
     .then((data) => {
@@ -85,38 +118,49 @@ const updateOrder = async (req, res) => {
 };
 
 const getOrder = (req, res) => {
-  if (req.params.id) {
-    orderModel
-      .findById(req.params.id)
-      .then((data) => {
-        if (!data) {
-          res.status(404).send({ msg: "Not found order" });
-        } else {
-          res.send(data);
-        }
-      })
-      .catch((err) => {
-        res
-          .status(500)
-          .send({ msg: "Error retriving data with id: " + req.params.id });
-      });
-  } else {
-    orderModel
-      .find()
-      .then((data) => {
+  orderModel
+    .findById(req.params.id)
+    .then((data) => {
+      if (!data) {
+        res.status(404).send({ msg: "Not found order" });
+      } else {
         res.send(data);
-      })
-      .catch((err) => {
-        res
-          .status(500)
-          .send({ msg: err.message || "Error occurred while retriving data" });
-      });
-  }
+      }
+    })
+    .catch((err) => {
+      res
+        .status(500)
+        .send({ msg: "Error retriving data with id: " + req.params.id });
+    });
 };
+
+const getOrders = async (req, res) => {
+  try {
+    const orderDetails = await orderModel.find().populate('orders.product').populate('customer');
+    console.log(orderDetails)
+    res.status(200).json(orderDetails)
+  } catch (e) {
+    console.log(e)
+    res.status(500).send({ msg: "Internal Server Error" });
+  }
+}
+
+const getMyOrders = async (req, res) => {
+  const userId = req.userData._id;
+  try {
+    const orderDetails = await orderModel.find({ customer: userId }).populate('orders.product');
+    res.status(200).json(orderDetails)
+  } catch (e) {
+    res.status(500).send({ msg: "Internal Server Error", e });
+  }
+}
 
 module.exports = {
   createOrder,
   deleteOrder,
   updateOrder,
   getOrder,
+  getOrders,
+  getMyOrders,
+  calculatorOrderPrice,
 };

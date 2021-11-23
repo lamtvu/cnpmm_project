@@ -2,7 +2,7 @@ const { Schema, model } = require("mongoose");
 
 const orderSchema = new Schema(
   {
-    customer: { type: Schema.Types.ObjectId, ref: "customers" }, // link to custormer
+    customer: { type: Schema.Types.ObjectId, ref: "custormers" }, // link to custormer
 
     orders: [
       {

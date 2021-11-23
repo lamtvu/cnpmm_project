@@ -2,7 +2,8 @@ const { Schema, model } = require("mongoose");
 
 const productSchema = new Schema(
   {
-    category: { type: Schema.Types.ObjectId, ref: "categories" }, //link to categories
+    category: { type: Schema.Types.ObjectId, ref: "categories" },
+    producer: { type: Schema.Types.ObjectId, ref: "producers" },
     name: { type: String, required: true },
     description: { type: String, required: true },
     detail: { type: String, required: true },

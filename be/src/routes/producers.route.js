@@ -8,9 +8,9 @@ producerRoute.post(
   authMiddleware.verifyToken,
   producerController.createProducer
 );
-producerRoute.delete("/delete/:id", producerController.deleteProducer);
-producerRoute.put("/update/:id", producerController.updateProducer);
+producerRoute.delete("/delete/:producerId", producerController.deleteProducer);
+producerRoute.put("/update/:producerId", producerController.updateProducer);
 producerRoute.get("/get-all", producerController.getProducer);
-producerRoute.get("/get-producer/:id", producerController.getProducer);
+producerRoute.get("/get-producer/:producerId", producerController.getProducer);
 
 module.exports = producerRoute;

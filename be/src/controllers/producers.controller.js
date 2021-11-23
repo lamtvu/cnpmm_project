@@ -19,13 +19,14 @@ const createProducer = (req, res) => {
 
 const deleteProducer = (req, res) => {
   const producerId = req.params.producerId;
-  producerModel.deleteOne(producerId, (err) => {
+  producerModel.deleteOne({_id: producerId}, (err) => {
     if (err) {
       return res.status(400).json({ status: 400, errors: [{ msg: err }] });
     }
     return res.status(200).json({ status: 200, data: null });
   });
 };
+
 const updateProducer = (req, res) => {
   if (!req.body) {
     return res.status(400).send({ msg: "Data to update can not empty" });
@@ -33,7 +34,7 @@ const updateProducer = (req, res) => {
   const producerId = req.params.producerId;
 
   producerModel
-    .updateOne(producerId, req.body, {
+    .updateOne({_id: producerId}, req.body, {
       useFindAndModify: false,
     })
     .then((data) => {

@@ -1,15 +1,25 @@
-POST  http://localhost:3000/api/customer/register HTTP/1.1
+
+GET  http://localhost:3002/api/customer/info HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTk4NzRhZjUwZGE2NjlmMzlhYzQ0NmQiLCJyb2xlIjoxLCJpYXQiOjE2Mzc0NjA4MDEsImV4cCI6MTYzNzU0NzIwMX0.6Kf4alJhn2VS9pP3e69Ul5v5_WJKJ7Dv9-A5NHMZnZE
+###
+GET  http://localhost:3002/api/customer HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTk4NzRhZjUwZGE2NjlmMzlhYzQ0NmQiLCJyb2xlIjoxLCJpYXQiOjE2Mzc0NjA4MDEsImV4cCI6MTYzNzU0NzIwMX0.6Kf4alJhn2VS9pP3e69Ul5v5_WJKJ7Dv9-A5NHMZnZE
+
+###
+POST  http://localhost:3002/api/customer/register HTTP/1.1
 Content-Type: application/json
 
 {
-    "email":"lamtvu3@gmai.com",
+    "email":"lamtvu6@gmai.com",
     "phoneNumber":"123123123",
-    "name":"thanh lam",
+    "name":"lamtvu",
     "password":"123123123"
 }
 
 ###
-POST  http://localhost:3000/api/auth/login HTTP/1.1
+POST  http://localhost:3002/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
@@ -166,7 +176,6 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MThhMGJhYTY0OGMzODBjZGExNDQyYjMiLCJyb2xlIjoxLCJpYXQiOjE2MzY3MjY0OTgsImV4cCI6MTYzNjgxMjg5OH0.5OcEegAyl3seRlonKfSA1jq-Clv2jdcFwGRGl-tshfY
 
 {
-    "customer": "6184d793734083967795a2fe",
     "orders":[{
         "product": "61862499fc4ae53a8b9d0b87",
         "count": 4

@@ -22,12 +22,22 @@ orderRoute.put(
 orderRoute.get(
   "/get-all",
   authMiddleware.verifyToken,
-  orderController.getOrder
+  orderController.getOrders
+);
+orderRoute.get(
+  "/my-orders",
+  authMiddleware.verifyToken,
+  orderController.getMyOrders
 );
 orderRoute.get(
   "/get-order/:id",
   authMiddleware.verifyToken,
   orderController.getOrder
 );
+orderRoute.post(
+  '/calculator',
+  orderController.calculatorOrderPrice
+)
+
 
 module.exports = orderRoute;
