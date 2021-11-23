@@ -1,6 +1,10 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 
-const Banner = ({ ...rest }) => {
+const Banner = ({ onAllSelect, onBradSelect, onCategorySelect, ...rest }) => {
+    const categories = useSelector(state => state.categories);
+    const brands = useSelector(state => state.brands);
+
     return (
         <div {...rest}>
             <div className='py-4 xl:flex relative'>
@@ -48,12 +52,11 @@ const Banner = ({ ...rest }) => {
                                     Categories
                                 </div>
                                 <div className='absolute z-10 top-full bg-white w-52 hidden group-hover:block p-1 rounded-lg shadow-xl'>
-                                    <div className='py-3 capitalize font-semibold px-3 text-gray-500 rounded-lg hover:bg-gray-100'>
-                                        sports watches
-                                    </div>
-                                    <div className='py-3 capitalize font-semibold px-3 text-gray-500 rounded-lg hover:bg-gray-100'>
-                                        office watches
-                                    </div>
+                                    {categories && categories.items.map(c => (
+                                        <div key={c._id} className='py-3 capitalize font-semibold px-3 text-gray-500 rounded-lg hover:bg-gray-100 cursor-pointer'>
+                                            {c.name}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                             <div className='group relative'>
@@ -65,16 +68,17 @@ const Banner = ({ ...rest }) => {
                                     Brands
                                 </div>
                                 <div className='absolute z-10 top-full bg-white w-52 hidden group-hover:block p-1 rounded-lg shadow-xl'>
-                                    <div className='py-3 capitalize font-semibold px-3 text-gray-500 rounded-lg hover:bg-gray-100'>
-                                        casio
-                                    </div>
-                                    <div className='py-3 capitalize font-semibold px-3 text-gray-500 rounded-lg hover:bg-gray-100'>
-                                        olym pianus
-                                    </div>
+                                    {brands && brands.items.map(b => (
+                                        <div key={b._id} className='py-3 capitalize font-semibold px-3 text-gray-500 rounded-lg hover:bg-gray-100' >
+                                            {b.name}
+                                        </div>
+                                    ))}
+
                                 </div>
                             </div>
                             <div className='text-xl font-semibold text-gray-500 text-center transform hover:-translate-y-1 cursor-pointer transition-transform
-                     bg-gray-50 py-2 w-52 rounded-xl shadow-md flex justify-center gap-3 hover:shadow-xl group'>
+                     bg-gray-50 py-2 w-52 rounded-xl shadow-md flex justify-center gap-3 hover:shadow-xl group'
+                                onClick={onAllSelect}>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 group-hover:animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                                 </svg>

@@ -1,12 +1,11 @@
-import { is } from "@babel/types";
-import { createProductAPI, createProducts, deleteProductAPI, getsProductsAPI, searchProductsAPI, updateProductAPI } from "../../api/productApi";
+import { createProductAPI, deleteProductAPI, getProductsAPI, searchProductsAPI, updateProductAPI } from "../../api/productApi";
 
 export const PRODUCT_REQUEST = 'PRODUCT_REQUEST';
 export const PRODUCT_ERROR = 'PRODUCT_ERROR';
 export const PRODUCT_NEXTPAGE = 'PRODUCT_NEXTPAGE';
 export const PRODUCT_STOPPAGE = 'PRODUCT_STOPPAGE';
 export const PRODUCT_SEARCH = 'PRODUCT_SEARCH';
-export const PRODUCT_FILTER = 'PRODUCT_FILTER';
+export const PRODUCT_GET = 'PRODUCT_GET';
 export const PRODUCT_SUCCESS = 'PRODUCT_SUCCESS';
 
 const productRequest = () => {
@@ -28,9 +27,9 @@ const productSearch = (products, query) => {
     }
 }
 
-const productFilter = (products, query) => {
+const productGet = (products, query) => {
     return {
-        type: PRODUCT_FILTER,
+        type: PRODUCT_GET,
         payload: { products, query }
     }
 }
@@ -61,7 +60,9 @@ export const searchProductsAction = (searchString) => {
         const state = getState();
         const products = state.products;
         try {
+            console.log(products.limit)
             const res = await searchProductsAPI(searchString, products.limit, 0);
+            console.log(res)
             dispatch(productSearch(res.data, searchString));
         } catch (err) {
             if (err.response) {
@@ -73,14 +74,15 @@ export const searchProductsAction = (searchString) => {
     }
 }
 
-export const filterProductsAction = (filterQuery) => {
+export const getProductsAction = (query) => {
     return async (dispatch, getState) => {
         dispatch(productRequest());
         const state = getState();
         const products = state.products;
         try {
-            const res = await getsProductsAPI(filterQuery, products.limit, 0);
-            dispatch(productFilter(res.data, filterQuery));
+            const res = await getProductsAPI(query, products.limit, 0);
+            console.log(res)
+            dispatch(productGet(res.data, query));
         } catch (err) {
             if (err.response) {
                 dispatch(productError(err.response.data.msg))
@@ -98,7 +100,8 @@ export const nextPageAction = () => {
         dispatch(productRequest());
         try {
             const res = await searchProductsAPI(query, limit, page + 1);
-            if (res.data.length === 0) {
+            console.log(res)
+            if (res.data.length < limit) {
                 dispatch(productStopPage());
                 return;
             }
@@ -114,12 +117,16 @@ export const nextPageAction = () => {
 }
 
 export const addProductAction = (product) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch(productRequest());
         try {
-            const res = await createProductAPI(product);
-            console.log(res)
+            const productState = getState().products;
+            await createProductAPI(product);
             dispatch(productSuccess());
+            if (productState.type === 'GET')
+                dispatch(getProductsAction(productState.query));
+            else
+                dispatch(searchProductsAction(productState.query));
         } catch (err) {
             if (err.response?.status === 500) {
                 dispatch(productError('Internal Err Error'));
@@ -133,11 +140,16 @@ export const addProductAction = (product) => {
 }
 
 export const updateProductAction = (id, product) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch(productRequest());
         try {
+            const productState = getState().products;
             await updateProductAPI(id, product);
             dispatch(productSuccess());
+            if (productState.type === 'GET')
+                dispatch(getProductsAction(productState.query));
+            else
+                dispatch(searchProductsAction(productState.query));
         } catch (err) {
             if (err.response) {
                 dispatch(productError(err.response.data.msg));
@@ -149,11 +161,16 @@ export const updateProductAction = (id, product) => {
 }
 
 export const deleteProductAction = (id) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch(productRequest());
+        const productState = getState().products;
         try {
             await deleteProductAPI(id);
             dispatch(productSuccess());
+            if (productState.type === 'GET')
+                dispatch(getProductsAction(productState.query));
+            else
+                dispatch(searchProductsAction(productState.query));
         } catch (err) {
             if (err.response) {
                 dispatch((err.response.data.msg));

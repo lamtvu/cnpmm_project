@@ -29,8 +29,9 @@ const Login = () => {
         setLoginSate({ ...loginState, status: 1 });
         try {
             const res = await login(loginData);
-            setCookies('auth', res.data.data);
-            if (res.data.data.role === 1) navigate('/');
+            setCookies('auth', res.data.data, { path: '/' });
+            const url = location.state?.continue || '/'
+            if (res.data.data.role === 1) navigate(url);
             else navigate('/admin')
 
         } catch (e) {

@@ -10,6 +10,7 @@ const linkDatas = [
     { label: 'products', link: '/admin/products' },
     { label: 'customers', link: '/admin/customers' },
     { label: 'orders', link: '/admin/orders' },
+    { label: 'discounts', link: '/admin/discounts' },
 ]
 
 const AdminLayout = () => {

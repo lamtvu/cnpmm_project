@@ -1,9 +1,9 @@
-import { PRODUCT_ERROR, PRODUCT_FILTER, PRODUCT_NEXTPAGE, PRODUCT_REQUEST, PRODUCT_SEARCH, PRODUCT_STOPPAGE, PRODUCT_SUCCESS } from "../actions/productAction"
+import { PRODUCT_ERROR, PRODUCT_GET, PRODUCT_NEXTPAGE, PRODUCT_REQUEST, PRODUCT_SEARCH, PRODUCT_STOPPAGE, PRODUCT_SUCCESS } from "../actions/productAction"
 
 const initState = {
     loading: false,
     error: '',
-    items: null,
+    items: [],
     query: null,
     type: null,
     limit: 20,
@@ -17,14 +17,14 @@ const ProductReducer = (state = initState, { type, payload }) => {
                 ...state,
                 loading: true,
             };
-        case PRODUCT_FILTER:
+        case PRODUCT_GET:
             return {
                 ...state,
                 loading: false,
                 query: payload.query,
                 items: payload.products,
                 page: 0,
-                type: 'FILTER'
+                type: 'GET'
             };
         case PRODUCT_SEARCH:
             return {
@@ -39,7 +39,7 @@ const ProductReducer = (state = initState, { type, payload }) => {
             return {
                 ...state,
                 loading: false,
-                items: payload.products,
+                items: [...state.items, ...payload],
                 page: state.page + 1
             };
         case PRODUCT_ERROR:
@@ -59,6 +59,8 @@ const ProductReducer = (state = initState, { type, payload }) => {
                 ...state,
                 loading: false
             }
+        default:
+            return { ...state };
     }
 }
 

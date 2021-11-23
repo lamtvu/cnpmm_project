@@ -3,7 +3,7 @@ import Logo from './logo'
 
 const Footer = () => {
     return (
-        <div className='py-4 sm:px-6 lg:px-16 bg-gray-100 flex justify-between items-center'>
+        <div className='py-4 sm:px-6 lg:px-16 bg-gray-100 flex justify-between items-center border-t-2'>
             <div>
                 <div className='text-lg font-semibold text-gray-500'>
                     Contact Info:
