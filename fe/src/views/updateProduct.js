@@ -34,7 +34,6 @@ const UpdateProduct = () => {
         try {
             const res = await getProductAPI(productId);
             const { category, producer } = res.data;
-            console.log(res)
             const categorySelect = { value: category._id, label: category.name };
             const producerSelect = { value: producer._id, label: producer.name };
             setUpdateData({ ...updateData, value: { ...res.data, category: categorySelect, producer: producerSelect } });
@@ -45,7 +44,6 @@ const UpdateProduct = () => {
             const _editorState = EditorState.createWithContent(contentState);
             setEditorState(_editorState);
         } catch (e) {
-            console.log(e)
             setNotFound(true);
         }
     }
@@ -55,7 +53,6 @@ const UpdateProduct = () => {
     }
 
     const changeDataValue = (key, value) => {
-        console.log(value)
         const createDataTemp = {
             value: { ...updateData.value, [key]: value },
             error: { ...updateData.error }
@@ -94,7 +91,6 @@ const UpdateProduct = () => {
                 producer: updateData.value.producer.value,
                 detail: draftToHtml(convertToRaw(editorState.getCurrentContent()))
             }));
-        console.log(updateData.value)
         navigate('/admin/products')
     }
 
@@ -204,7 +200,7 @@ const UpdateProduct = () => {
                         </div>
                         <div className='py-2'>
                             <div className='text-md font-semibold capitalize'>Detail:</div>
-                            <div className='h-96'>
+                            <div className='h-96 mb-20'>
                                 <TextEditor
                                     editorState={editorState}
                                     onEditorStateChange={onEditorChange}
@@ -218,7 +214,7 @@ const UpdateProduct = () => {
                             <button
                                 onClick={updateHandler}
                                 className='w-52 py-2 bg-gray-50 shadow-md hover:bg-gray-100 hover:shadow-lg'>
-                                Create
+                                Update
                             </button>
                         </div>
                     </div>

@@ -13,14 +13,15 @@ const toolbarOption = {
 
 const TextEditor = ({ onEditorStateChange, editorState }) => {
     return (
-        <Editor
-            wrapperClassName='border-2'
-            editorClassName='px-4'
-            editorStyle={{ minHeight: '300px' }}
-            onEditorStateChange={onEditorStateChange}
-            editorState={editorState}
-            toolbar={toolbarOption}
-        />
+        <div>
+            <Editor
+                wrapperClassName='h-96'
+                editorClassName='px-4 border-2'
+                onEditorStateChange={onEditorStateChange}
+                editorState={editorState}
+                toolbar={toolbarOption}
+            />
+        </div>
     )
 }
 

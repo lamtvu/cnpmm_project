@@ -7,6 +7,7 @@ import { getUserAction, setUser } from '../store/actions/userAction'
 
 const Header = () => {
     const user = useSelector(state => state.user);
+    const cartMsg = useSelector(state => state.cartMsg);
     const dispatch = useDispatch();
     const [cookies, _, removeCookies] = useCookies(['auth']);
     const navigate = useNavigate()
@@ -16,7 +17,6 @@ const Header = () => {
     }, [])
 
     const logoutHandler = () => {
-        console.log('logut')
         removeCookies('auth', { path: '/' });
         localStorage.removeItem('orderProducts');
         dispatch(setUser(null))
@@ -66,10 +66,19 @@ const Header = () => {
                         </div>
                     </div>}
                     {cookies.auth?.role !== 0 && <div className='flex items-center gap-4'>
-                        <Link className='text-gray-400 cursor-pointer hover:text-gray-500' to='/cart'>
+                        <Link className='text-gray-400 cursor-pointer hover:text-gray-500 relative' to='/cart'>
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
+                            <p className='z-10 absolute font-semibold bg-red-400 text-sm text-white rounded-full px-2 -top-2 transform translate-x-full'>
+                                {JSON.parse(localStorage.getItem('orderProducts'))?.length}</p>
+                            {cartMsg?.open && <div className='bg-gray-50 border-2 shadow-md absolute w-auto text-center rounded-lg whitespace-nowrap transform -translate-x-2/3 top-full px-4 py-3 text-lg font-semibold'>
+                                Add to cart successfully
+                                <button></button>
+                                <div class="w-16 overflow-hidden inline-block top-0 absolute transform -translate-y-full left-2/3">
+                                    <div class=" h-4 w-4 bg-white border-t-2 border-l-2 rotate-45 transform origin-bottom-left"></div>
+                                </div>
+                            </div>}
                         </Link>
                         <Link className='text-gray-400 cursor-pointer hover:text-gray-500' to='/'>
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">

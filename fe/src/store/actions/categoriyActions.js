@@ -1,4 +1,5 @@
 import { getCagtegoriesAPI, deleteCategoryAPI, updateCategoryAPI, addCatetoryAPI } from './../../api/categotyApi';
+import { turnOnMessageAction } from './messageAction';
 
 export const CATEGORY_REQUEST = 'CATEGORY_REQUEST';
 export const CATEGORY_SUCCESS = 'CATEGORY_SUCCESS';
@@ -31,12 +32,14 @@ const categoriesSelect = (category) => {
         payload: category,
     }
 }
-export const getCagtegoriesAction = () => {
+export const getCagtegoriesAction = (msg) => {
     return async (dispatch) => {
         dispatch(categoriesRequest());
         try {
             const res = await getCagtegoriesAPI();
             dispatch(categoriesSuccess(res.data));
+            if (msg)
+                dispatch(turnOnMessageAction('GOBAL', msg))
         } catch (err) {
             console.log(err);
             if (err.response) {
@@ -53,7 +56,7 @@ export const addCategoryAction = (data) => {
         dispatch(categoriesRequest());
         try {
             await addCatetoryAPI(data);
-            dispatch(getCagtegoriesAction());
+            dispatch(getCagtegoriesAction('successful create'));
         } catch (err) {
             console.log(err)
             if (err.response) {
@@ -70,7 +73,7 @@ export const deleteCategoryAction = (id) => {
         dispatch(categoriesRequest());
         try {
             await deleteCategoryAPI(id);
-            dispatch(getCagtegoriesAction());
+            dispatch(getCagtegoriesAction('successfull delete'));
         } catch (err) {
             if (err.response) {
                 dispatch(categoriesError(err.response.data.msg));
@@ -86,10 +89,9 @@ export const updateCategoryAction = (data) => {
         dispatch(categoriesRequest());
         const state = getState();
         const selected = state.categories.selected;
-        console.log(selected)
         try {
             await updateCategoryAPI(selected._id, data);
-            dispatch(getCagtegoriesAction());
+            dispatch(getCagtegoriesAction('successfull update'));
         } catch (err) {
             console.log(err.response)
             if (err.response) {
@@ -109,7 +111,6 @@ export const selectCategoryAction = (id) => {
         const state = getState();
         const categories = state.categories.items;
         const category = categories.find(cate => cate._id === id);
-        console.log('category', category)
         dispatch(categoriesSelect({ ...category }));
     }
 }

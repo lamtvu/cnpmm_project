@@ -13,7 +13,6 @@ const Login = () => {
     const location = useLocation();
 
     useEffect(() => {
-        console.log(location);
         setBanner(location.state)
     }, [])
 

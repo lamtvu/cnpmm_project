@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom'
 import { getProductAPI } from '../api/productApi';
+import { numberToPrice } from '../services/formatService';
+import { openCartMsgAction } from '../store/actions/cartMsgAction';
 
 const ProductDetail = () => {
     const { productId } = useParams();
     const [product, setProduct] = useState(null);
     const [notFound, setNotFound] = useState(false);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,6 +25,10 @@ const ProductDetail = () => {
         }
     }
 
+    const caculateDiscount = () => {
+        return product.price - product.discount.value * product.price
+    }
+
     const buyHandler = async () => {
         const temp = localStorage.getItem('orderProducts');
         const orderProducts = JSON.parse(temp) || [];
@@ -28,11 +36,11 @@ const ProductDetail = () => {
         if (_product) {
             _product.count = _product.count + 1;
             localStorage.setItem('orderProducts', JSON.stringify([...orderProducts]));
-            navigate('/cart')
+            dispatch(openCartMsgAction());
             return;
         }
         localStorage.setItem('orderProducts', JSON.stringify([...orderProducts, { product: productId, count: 1 }]));
-        navigate('/cart')
+        dispatch(openCartMsgAction());
     }
 
     return (
@@ -53,19 +61,29 @@ const ProductDetail = () => {
                                 <span className='font-semibold'>category: </span>
                                 {product.category.name}
                             </div>
-                            <div className='text-3xl font-bold p-4 bg-gray-100 rounded-lg shadow-md'>
-                                {product.price} vnd
-                            </div>
+                            {product.discount ?
+                                <div className='p-4 bg-gray-100 rounded-lg shadow-md'>
+                                    <div>
+                                        <span className='line-through text-gray-400'>{numberToPrice(product.price)} vnd</span>
+                                        <span className='ml-2 font-semibold'>-{product.discount.value * 100}%</span>
+                                    </div>
+                                    <div className='text-3xl font-bold  text-gray-600'>
+                                        {numberToPrice(caculateDiscount(product.price))} vnd
+                                    </div>
+                                </div>
+                                : <div className='text-3xl font-bold p-4 bg-gray-100 rounded-lg shadow-md'>
+                                    {numberToPrice(product.price)} vnd
+                                </div>}
                             <button className='focus:outline-none py-2 w-64 bg-gray-400 rounded-lg
                             text-white hover:bg-gray-300 shadow-md font-semibold text-xl'
-                                onClick={buyHandler}>Buy</button>
+                                onClick={buyHandler}>Add to cart</button>
                         </div>
                     </div>
                     <div className='p-4 bg-white mt-4'>
                         <div className='font-semibold'>Description</div>
-                        <pre>
+                        <div>
                             {product.description}
-                        </pre>
+                        </div>
                     </div>
                     <div className='p-4 bg-white mt-4'>
                         <div className='font-semibold'>Detail</div>

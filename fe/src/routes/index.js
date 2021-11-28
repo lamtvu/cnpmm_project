@@ -17,6 +17,11 @@ import Cart from '../views/cart';
 import ProductDetail from '../views/productDetail';
 import MyOrder from '../views/myOrder';
 import Information from '../views/information';
+import OrderDetail from '../views/orderDetail';
+import CreateDiscount from '../views/createDiscount';
+import EditDiscount from '../views/editDiscount';
+import ChangeInfor from '../views/changeInfor';
+import ChangePassword from '../views/changePassword';
 
 export const mainRoutes = (auth) => [
     { path: '/home', element: <Navigate to='/' /> },
@@ -43,7 +48,10 @@ export const customerRoutes = (auth) => {
             children: [
                 { path: '', element: <Navigate to='/user/my-orders' /> },
                 { path: 'my-orders', element: <MyOrder /> },
-                { path: 'information', element: <Information /> }
+                { path: 'order-detail/:id', element: <OrderDetail /> },
+                { path: 'information', element: <Information /> },
+                { path: 'change-information', element: <ChangeInfor /> },
+                { path: 'change-password', element: <ChangePassword /> }
             ]
         }
     ]
@@ -63,7 +71,10 @@ export const adminRoutes = (auth) => {
                 { path: 'update-product/:productId', element: <UpdateProduct /> },
                 { path: 'customers', element: <Customers /> },
                 { path: 'orders', element: <Orders /> },
-                { path: 'discounts', element: <Discounts /> }
+                { path: 'order-detail/:id', element: <OrderDetail /> },
+                { path: 'discounts', element: <Discounts /> },
+                { path: 'create-discount', element: <CreateDiscount /> },
+                { path: 'update-discount/:id', element: <EditDiscount /> }
             ]
         }
     ]

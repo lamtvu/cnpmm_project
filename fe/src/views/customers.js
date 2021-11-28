@@ -21,7 +21,7 @@ const Customers = () => {
                 <table className='w-full'>
                     <thead>
                         <tr className='text-gray-500 capitalize font-semibold border-b-2 '>
-                            <td>id</td>
+                            <td className='w-20'>id</td>
                             <td>name</td>
                             <td>email</td>
                             <td>createdAt</td>
@@ -30,8 +30,8 @@ const Customers = () => {
                     <tbody>
                         {customers && customers.items.map(customer => (
                             <tr className='text-gray-500 border-b-2 border-gray-100' key={customer._id}>
-                                <td>{customer._id}</td>
-                                <td>{customer.name}</td>
+                                <td className='w-20 border-r-2 border-gray-100'>{customer._id}</td>
+                                <td className='pl-2'>{customer.name}</td>
                                 <td>{customer.email}</td>
                                 <td>{new Date(customer.createdAt.toString()).toDateString()}</td>
                             </tr>)

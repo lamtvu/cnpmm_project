@@ -1,8 +1,7 @@
 import { convertToRaw, EditorState } from 'draft-js';
-import { useNavigate } from 'react-router-dom';
 import draftToHtml from 'draftjs-to-html'
-import React, { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import TextEditor from '../components/editor'
 import Select from 'react-select';
 import { useSelector } from 'react-redux';
@@ -10,12 +9,15 @@ import { useDispatch } from 'react-redux';
 import { getCagtegoriesAction } from '../store/actions/categoriyActions'
 import { getBrandsAction } from '../store/actions/brandAction'
 import { addProductAction } from '../store/actions/productAction';
+import NumberFormat from 'react-number-format';
+import Loading from '../components/loading';
 
 const CreateProduct = () => {
-    const navigate = useNavigate();
     const categories = useSelector(state => state.categories);
     const brands = useSelector(state => state.brands);
+    const products = useSelector(state=> state.products);
     const dispatch = useDispatch();
+    const navigate = useNavigate()
 
     const [imgSrc, setImgSrc] = useState(null);
     const [createData, setCreateData] = useState({ value: {}, error: {} })
@@ -49,7 +51,6 @@ const CreateProduct = () => {
     }
 
     const changeCreateDataValue = (key, value) => {
-        console.log(value)
         const createDataTemp = {
             value: { ...createData.value, [key]: value },
             error: { ...createData.error }
@@ -61,31 +62,37 @@ const CreateProduct = () => {
     }
 
     const createHandler = () => {
+        let errors = null;
+        console.log(createData.value)
         if (!createData.value.image) {
-            setCreateData({ ...createData, error: { ...createData.error, image: 'requied' } });
-            return;
+            errors = { ...errors, image: 'requied' }
         }
         if (!createData.value.name) {
-            setCreateData({ ...createData, error: { ...createData.error, name: 'requied' } });
-            return;
+            errors = { ...errors, name: 'requied' }
         }
         if (!createData.value.category) {
-            setCreateData({ ...createData, error: { ...createData.error, category: 'requied' } });
-            return;
+            errors = { ...errors, category: 'requied' }
         }
         if (!createData.value.producer) {
-            setCreateData({ ...createData, error: { ...createData.error, producer: 'requied' } });
-            return;
+            errors = { ...errors, producer: 'requied' }
         }
         if (!createData.value.price) {
-            setCreateData({ ...createData, error: { ...createData.error, price: 'requied' } });
-            return;
+            errors = { ...errors, price: 'requied' }
         }
         if (!createData.value.description) {
-            setCreateData({ ...createData, error: { ...createData.error, image: 'requied' } });
-            return;
+            errors = { ...errors, description: 'requied' }
         }
 
+        if (errors) {
+            setCreateData({
+                ...createData,
+                error: {
+                    ...createData.error,
+                    ...errors
+                }
+            })
+            return;
+        }
 
         const fd = new FormData();
         fd.append('name', createData.value.name);
@@ -96,8 +103,7 @@ const CreateProduct = () => {
         fd.append('image', createData.value.image);
         fd.append('detail', draftToHtml(convertToRaw(editorState.getCurrentContent())));
         setEditorState(EditorState.createEmpty());
-        navigate('/admin/products')
-        dispatch(addProductAction(fd));
+        dispatch(addProductAction(fd, () => navigate('/admin/products')));
     }
 
     return (
@@ -118,7 +124,7 @@ const CreateProduct = () => {
                         <div className='text-md font-semibold capitalize'>image*:
                             {createData.error.image && <span className='text-red-500'> required</span>}
                         </div>
-                        { imgSrc && <img className='w-96 h-96' src={imgSrc} alt='productImgae' />}
+                        {imgSrc && <img className='w-96 h-96' src={imgSrc} alt='productImgae' />}
                         <label className='inline-block px-4 py-2 bg-gray-50 rounded-md shadow-md  hover:bg-gray-100 hover:shadow-lg'>
                             upload
                             <input hidden type="file" name="file" onChange={onFileChange} accept='image/png, image/jpeg' />
@@ -155,13 +161,13 @@ const CreateProduct = () => {
                                         primary50: 'hotgray',
                                         primary: 'gray',
                                     },
-                                })}
+                                 })}
                             />
                         </label>
                     </div>
                     <div className='py-2'>
                         <label className='py-4'>
-                            <div className='text-md py-2 font-semibold capitalize'>Brand/producer*:
+                            <div className='text-md py-2 font-semibold capitalize'>Brand:
                                 {createData.error.producer && <span className='text-red-500'> required</span>}
                             </div>
                             <Select
@@ -199,16 +205,13 @@ const CreateProduct = () => {
                                 Price*:
                                 {createData.error.price && <span className='text-red-500'> required</span>}
                             </div>
-                            <input type="number" name="price"
-                                autoComplete="off"
-                                onChange={(e) => changeCreateDataValue('price', e.target.value)}
-                                className='outline-none border-2 rounded-md py-1 px-2' />
-                            <span className='ml-1'>vnd</span>
+                            <NumberFormat thousandSeparator={true} onValueChange={(e) => changeCreateDataValue('price', e.value)}
+                                prefix={'vnd'} className='outline-none border-2 rounded-md py-1 px-2' />
                         </label>
                     </div>
                     <div className='py-2'>
                         <div className='text-md font-semibold capitalize'>Detail:</div>
-                        <div className='h-96'>
+                        <div className='h-96 mb-20'>
                             <TextEditor
                                 editorState={editorState}
                                 onEditorStateChange={onEditorChange}
@@ -216,9 +219,11 @@ const CreateProduct = () => {
                         </div>
                     </div>
                     <div>
-                        {Object.keys(createData.error).length > 0 && <div name='errors' className='text-red-600 text-base font-semibold'>
-                            Fill in all input fields
-                        </div>}
+                        {Object.keys(createData.error).length > 0 && (
+                            <div name='errors' className='text-white text-base font-semibold bg-red-400 p-3 rounded-sm'>
+                                Fill in all input fields
+                            </div>)}
+                        {products.loading && <Loading />}
                         <button
                             onClick={createHandler}
                             className='w-52 py-2 bg-gray-50 shadow-md hover:bg-gray-100 hover:shadow-lg'>

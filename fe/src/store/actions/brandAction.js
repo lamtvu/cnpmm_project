@@ -1,4 +1,5 @@
 import { addBrandAPI, deleteBrandAPI, getBrandsAPI, updateBrandAPI } from "../../api/brandApi";
+import { turnOnMessageAction } from "./messageAction";
 
 export const BRAND_REQUEST = 'BRAND_REQUEST';
 export const BRAND_SUCCESS = 'BRAND_SUCCESS';
@@ -32,12 +33,13 @@ const brandSelect = (brand) => {
     }
 }
 
-export const getBrandsAction = () => {
+export const getBrandsAction = (msg) => {
     return async (dispatch) => {
         dispatch(brandsRequest());
         try {
             const res = await getBrandsAPI();
             dispatch(brandsSuccess(res.data));
+            if (msg) dispatch(turnOnMessageAction('GOBAL', msg))
         } catch (err) {
             if (err.response) {
                 dispatch(brandsError(err.response.data.err));
@@ -53,7 +55,7 @@ export const deleteBrandAction = (id) => {
         dispatch(brandsRequest());
         try {
             await deleteBrandAPI(id);
-            dispatch(getBrandsAction());
+            dispatch(getBrandsAction('Successful delete'));
         } catch (err) {
             if (err.response) {
                 dispatch(brandsError(err.response.data.err));
@@ -69,7 +71,7 @@ export const addBrandAction = (data) => {
         dispatch(brandsRequest());
         try {
             await addBrandAPI(data);
-            dispatch(getBrandsAction());
+            dispatch(getBrandsAction('Successful create'));
         } catch (err) {
             if (err.response) {
                 dispatch(brandsError(err.response.data.err));
@@ -87,7 +89,7 @@ export const updateBrandAction = (data) => {
         const id = state.brands.selected._id;
         try {
             await updateBrandAPI(id, data);
-            dispatch(getBrandsAction());
+            dispatch(getBrandsAction('Successfull update'));
         } catch (err) {
             if (err.response) {
                 dispatch(brandsError(err.response.data.err));

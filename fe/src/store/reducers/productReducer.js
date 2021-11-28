@@ -1,13 +1,14 @@
-import { PRODUCT_ERROR, PRODUCT_GET, PRODUCT_NEXTPAGE, PRODUCT_REQUEST, PRODUCT_SEARCH, PRODUCT_STOPPAGE, PRODUCT_SUCCESS } from "../actions/productAction"
+import { PRODUCT_CLEAR, PRODUCT_ERROR, PRODUCT_GET, PRODUCT_NEXTPAGE, PRODUCT_REQUEST, PRODUCT_SEARCH, PRODUCT_STOPPAGE, PRODUCT_SUCCESS } from "../actions/productAction"
 
 const initState = {
     loading: false,
     error: '',
     items: [],
+    total: 0,
     query: null,
     type: null,
-    limit: 20,
-    page: 0
+    limit: 10,
+    page: -1
 }
 
 const ProductReducer = (state = initState, { type, payload }) => {
@@ -31,7 +32,9 @@ const ProductReducer = (state = initState, { type, payload }) => {
                 ...state,
                 loading: false,
                 query: payload.query,
-                items: payload.products,
+                items: payload.results,
+                total: payload.count,
+                limit: payload.limit,
                 page: 0,
                 type: 'SEARCH'
             };
@@ -52,6 +55,7 @@ const ProductReducer = (state = initState, { type, payload }) => {
             return {
                 ...state,
                 loading: false,
+                items: [...state.items, ...payload],
                 page: -1
             };
         case PRODUCT_SUCCESS:
@@ -59,6 +63,8 @@ const ProductReducer = (state = initState, { type, payload }) => {
                 ...state,
                 loading: false
             }
+        case PRODUCT_CLEAR:
+            return { ...initState }
         default:
             return { ...state };
     }

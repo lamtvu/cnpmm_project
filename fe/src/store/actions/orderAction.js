@@ -3,6 +3,7 @@ import { createBrowserHistory } from 'history'
 
 export const ORDER_REQUEST = 'ORDER_REQUEST';
 export const ORDER_SUCCESS = 'ORDER_SUCCESS';
+export const MYORDER_SUCCESS = 'MYORDER_SUCCESS';
 export const ORDER_ERROR = 'ORDER_ERROR';
 
 const requestOrder = () => {
@@ -11,9 +12,16 @@ const requestOrder = () => {
     }
 }
 
-const orderSuccess = (orders) => {
+const orderSuccess = (orders, searchString, limit) => {
     return {
         type: ORDER_SUCCESS,
+        payload: { ...orders, searchString, limit }
+    }
+}
+
+const myOrderSuccess = (orders) => {
+    return {
+        type: MYORDER_SUCCESS,
         payload: orders
     }
 }
@@ -25,12 +33,12 @@ const orderError = (error) => {
     }
 }
 
-export const getOrdersAction = () => {
+export const getOrdersAction = (searchString, page, limit) => {
     return async (dispatch) => {
         dispatch(requestOrder());
         try {
-            const res = await getAllOrdersAPI();
-            dispatch(orderSuccess(res.data));
+            const res = await getAllOrdersAPI(page, limit, searchString);
+            dispatch(orderSuccess(res.data, searchString, limit));
         } catch (err) {
             dispatch(orderError('orders load failed'));
         }
@@ -42,7 +50,8 @@ export const getMyOrdersAction = () => {
         dispatch(requestOrder());
         try {
             const res = await getMyOrdersAPI();
-            dispatch(orderSuccess(res.data));
+            console.log(res.data)
+            dispatch(myOrderSuccess(res.data));
         } catch (err) {
             dispatch(orderError('orders load failed'));
         }
@@ -53,10 +62,10 @@ export const createOrderAction = (data, navigate) => {
     return async (dispatch) => {
         dispatch(requestOrder());
         try {
-            await createOrderAPI(data);
+            const res = await createOrderAPI(data);
             dispatch(getMyOrdersAction());
             localStorage.removeItem('orderProducts');
-            navigate('/user/my-orders')
+            navigate('/user/order-detail/' + res.data._id, {state: {msg: 'Successful Order'}})
         } catch (err) {
             dispatch(orderError('orders load failed'));
         }

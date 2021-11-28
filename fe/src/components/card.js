@@ -1,8 +1,13 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { numberToPrice } from '../services/formatService';
 
 const Card = ({ productData, size, ...rest }) => {
     const navigate = useNavigate();
+
+    const caculateDiscount = () => {
+        return productData.price - productData.discount.value * productData.price
+    }
 
     return (
         <div {...rest}>
@@ -23,9 +28,19 @@ const Card = ({ productData, size, ...rest }) => {
                     <div className='capitalize text-md font-normal text-gray-600'>
                         {productData.producer.name}
                     </div>
-                    <div className='capitalize text-md font-normal text-gray-600'>
-                        {productData.price} vnd
+                    {productData.discount ? (<div>
+                        <div>
+                            <span className='line-through text-gray-400'>{numberToPrice(productData.price)} vnd</span>
+                            <span className='ml-2 font-semibold'>-{productData.discount.value * 100}%</span>
+                        </div>
+                        <div className='text-xl font-normal text-gray-600'>
+                            {numberToPrice(caculateDiscount(productData.price))} vnd
+                        </div>
                     </div>
+                    ) : (
+                        <div className='text-xl font-normal text-gray-600'>
+                            {numberToPrice(productData.price)} vnd
+                        </div>)}
                 </div>
             </div>
         </div>

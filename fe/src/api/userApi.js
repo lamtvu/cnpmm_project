@@ -15,3 +15,11 @@ export const getInforAPI = () => {
 export const register = (registerData) => {
     return instance.post('/customer/register', registerData);
 }
+
+export const changeInfoAPI = (data) => {
+    return instance.put('/customer/info', data);
+}
+
+export const changePasswordAPI = (data) => {
+    return instance.put('/customer/password', data);
+}

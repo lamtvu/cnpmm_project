@@ -4,12 +4,12 @@ import Dropdown from './dropdown'
 import Card from './card'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-import { getProductsAction, nextPageAction } from '../store/actions/productAction'
+import { clearProducts, getProductsAction, nextPageAction } from '../store/actions/productAction'
 import { getBrandsAction } from '../store/actions/brandAction'
 import { getCagtegoriesAction } from '../store/actions/categoriyActions'
 import { Waypoint } from 'react-waypoint'
 
-const Shop = ({ initCategory, initBrand }) => {
+const Shop = () => {
     const products = useSelector(state => state.products);
     const categories = useSelector(state => state.categories);
     const brands = useSelector(state => state.brands);
@@ -18,21 +18,11 @@ const Shop = ({ initCategory, initBrand }) => {
     useEffect(() => {
         dispatch(getBrandsAction());
         dispatch(getCagtegoriesAction());
-    }, [])
-
-    useEffect(() => {
-        if (initBrand) {
-            dispatch(getProductsAction({ producers: [initBrand], categories: [] }));
-            return;
-        }
-
-        if (initCategory) {
-            dispatch(getProductsAction({ producers: [], categories: [initCategory] }));
-            return;
-        }
-
         dispatch(getProductsAction({ producers: [], categories: [] }));
-    }, [initBrand, initCategory])
+        return () => {
+            dispatch(clearProducts());
+        }
+    }, [])
 
     const onBrandChange = (e) => {
         const target = e.target;
@@ -41,7 +31,6 @@ const Shop = ({ initCategory, initBrand }) => {
             query = { ...query, producers: [...query.producers, target.value] }
         } else {
             const temp = query.producers.filter(p => p !== target.value);
-            console.log(temp);
             query = { ...query, producers: [...temp] }
         }
         dispatch(getProductsAction(query));
@@ -54,7 +43,6 @@ const Shop = ({ initCategory, initBrand }) => {
             query = { ...query, categories: [...query.categories, target.value] }
         } else {
             const temp = query.categories.filter(p => p !== target.value);
-            console.log(temp);
             query = { ...query, categories: [...temp] }
         }
         dispatch(getProductsAction(query));
@@ -70,7 +58,6 @@ const Shop = ({ initCategory, initBrand }) => {
                             <CheckBox lableString={category.name}
                                 onChange={onCategoryChange}
                                 value={category._id}
-                                defaultChecked={category._id === initCategory}
                                 key={category._id} />
                         ))}
 
@@ -82,19 +69,40 @@ const Shop = ({ initCategory, initBrand }) => {
                             <CheckBox lableString={brand.name}
                                 key={brand._id}
                                 value={brand._id}
-                                defaultChecked={brand._id === initBrand}
                                 onChange={onBrandChange} />
                         ))}
                     </div>
                 </Dropdown>
             </div>
-            <div className='grid grid-cols-2 md:grid-cols-3 gap-16 p-4 w-full'>
-                {products && products.items.map(product => {
-                    return <Card productData={product} key={product._id} />
-                })}
+            <div className='w-full'>
+                <div className='grid grid-cols-2 md:grid-cols-3 gap-16 p-4'>
+                    {products.items.map(product => {
+                        return <Card productData={product} key={product._id} />
+                    })}
+                </div>
+                {products?.loading && <div className='grid grid-cols-2 md:grid-cols-3 gap-16 p-4'>
+                    <div className='hidden md:block p-3 animate-pulse'>
+                        <div className='w-full h-52 bg-gray-200 mt-4'></div>
+                        <div className='w-2/3 h-5 bg-gray-200 mt-4'></div>
+                        <div className='w-2/5 h-4 bg-gray-200 mt-4'></div>
+                    </div>
+                    <div className='p-3 animate-pulse'>
+                        <div className='w-full h-52 bg-gray-200 mt-4'></div>
+                        <div className='w-2/3 h-5 bg-gray-200 mt-4'></div>
+                        <div className='w-2/5 h-4 bg-gray-200 mt-4'></div>
+                    </div>
+                    <div className='p-3 animate-pulse'>
+                        <div className='w-full h-52 bg-gray-200 mt-4'></div>
+                        <div className='w-2/3 h-5 bg-gray-200 mt-4'></div>
+                        <div className='w-2/5 h-4 bg-gray-200 mt-4'></div>
+                    </div>
+                </div>}
+                {products.page !== -1 && !products.loading && <Waypoint className='bg-gray-700 p-4' onEnter={() => {
+                    console.log('next')
+                    dispatch(nextPageAction())
+                }} />}
             </div>
-            {products?.items.length > 0 && <Waypoint onEnter={() => dispatch(nextPageAction())} />}
-        </div>
+        </div >
     )
 }
 

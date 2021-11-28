@@ -1,4 +1,5 @@
 import { createProductAPI, deleteProductAPI, getProductsAPI, searchProductsAPI, updateProductAPI } from "../../api/productApi";
+import { turnOnMessageAction } from "./messageAction";
 
 export const PRODUCT_REQUEST = 'PRODUCT_REQUEST';
 export const PRODUCT_ERROR = 'PRODUCT_ERROR';
@@ -7,6 +8,7 @@ export const PRODUCT_STOPPAGE = 'PRODUCT_STOPPAGE';
 export const PRODUCT_SEARCH = 'PRODUCT_SEARCH';
 export const PRODUCT_GET = 'PRODUCT_GET';
 export const PRODUCT_SUCCESS = 'PRODUCT_SUCCESS';
+export const PRODUCT_CLEAR = 'PRODUCT_CLEAR';
 
 const productRequest = () => {
     return {
@@ -20,10 +22,10 @@ const productSuccess = () => {
     }
 }
 
-const productSearch = (products, query) => {
+const productSearch = (products, query, limit) => {
     return {
         type: PRODUCT_SEARCH,
-        payload: { products, query }
+        payload: { ...products, query, limit }
     }
 }
 
@@ -48,22 +50,26 @@ const productNextPage = (products) => {
     }
 }
 
-const productStopPage = () => {
+const productStopPage = (products) => {
     return {
         type: PRODUCT_STOPPAGE,
+        payload: products
     }
 }
 
-export const searchProductsAction = (searchString) => {
-    return async (dispatch, getState) => {
+export const clearProducts = () => {
+    return {
+        type: PRODUCT_CLEAR
+    }
+}
+
+export const searchProductsAction = (searchString, page, limit) => {
+    return async (dispatch) => {
         dispatch(productRequest());
-        const state = getState();
-        const products = state.products;
         try {
-            console.log(products.limit)
-            const res = await searchProductsAPI(searchString, products.limit, 0);
+            const res = await searchProductsAPI(searchString, limit, page);
             console.log(res)
-            dispatch(productSearch(res.data, searchString));
+            dispatch(productSearch(res.data, searchString, limit));
         } catch (err) {
             if (err.response) {
                 dispatch(productError(err.response.data.msg))
@@ -81,7 +87,7 @@ export const getProductsAction = (query) => {
         const products = state.products;
         try {
             const res = await getProductsAPI(query, products.limit, 0);
-            console.log(res)
+            console.log(res.data)
             dispatch(productGet(res.data, query));
         } catch (err) {
             if (err.response) {
@@ -99,10 +105,10 @@ export const nextPageAction = () => {
         const { query, limit, page } = products;
         dispatch(productRequest());
         try {
-            const res = await searchProductsAPI(query, limit, page + 1);
-            console.log(res)
+            const res = await getProductsAPI(query, limit, page + 1);
             if (res.data.length < limit) {
-                dispatch(productStopPage());
+                console.log('stop');
+                dispatch(productStopPage(res.data));
                 return;
             }
             dispatch(productNextPage(res.data));
@@ -116,17 +122,16 @@ export const nextPageAction = () => {
     }
 }
 
-export const addProductAction = (product) => {
+export const addProductAction = (product, successCallBack) => {
     return async (dispatch, getState) => {
         dispatch(productRequest());
         try {
             const productState = getState().products;
             await createProductAPI(product);
             dispatch(productSuccess());
-            if (productState.type === 'GET')
-                dispatch(getProductsAction(productState.query));
-            else
-                dispatch(searchProductsAction(productState.query));
+            dispatch(searchProductsAction(productState.query));
+            dispatch(turnOnMessageAction('GOBAL', 'successful create'))
+            successCallBack();
         } catch (err) {
             if (err.response?.status === 500) {
                 dispatch(productError('Internal Err Error'));
@@ -146,6 +151,7 @@ export const updateProductAction = (id, product) => {
             const productState = getState().products;
             await updateProductAPI(id, product);
             dispatch(productSuccess());
+            dispatch(turnOnMessageAction('GOBAL', 'successful update'))
             if (productState.type === 'GET')
                 dispatch(getProductsAction(productState.query));
             else
@@ -167,6 +173,7 @@ export const deleteProductAction = (id) => {
         try {
             await deleteProductAPI(id);
             dispatch(productSuccess());
+            dispatch(turnOnMessageAction('GOBAL', 'successful update'))
             if (productState.type === 'GET')
                 dispatch(getProductsAction(productState.query));
             else
