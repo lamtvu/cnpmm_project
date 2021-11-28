@@ -19,9 +19,42 @@ const register = async (req, res) => {
 
 const getInfo = async (req, res) => {
     const userId = req.userData._id;
-
     try {
-        const user = await customerModel.findOne({_id: userId});
+        const user = await customerModel.findOne({ _id: userId });
+        res.status(200).json(user);
+    } catch {
+        res.status(500).json({ msg: 'Internal Server Error' });
+    }
+}
+
+const changeInfor = async (req, res) => {
+    const userId = req.userData._id;
+    const { address, name, phoneNumber } = req.body;
+    try {
+        const user = await customerModel.findOneAndUpdate({ _id: userId },
+            { address, name, phoneNumber }, { new: true });
+        res.status(200).json(user);
+    } catch {
+        res.status(500).json({ msg: 'Internal Server Error' });
+    }
+}
+
+const changePassword = async (req, res) => {
+    const userId = req.userData._id;
+    const { password, oldPassword } = req.body;
+
+    if (!password) {
+        return res.status(400).json({ msg: 'required password' });
+    }
+    if (!oldPassword) {
+        return res.status(400).json({ msg: 'required password' });
+    }
+    try {
+        const userTemp = await customerModel.findById(req.userData._id);
+        if (userTemp.password !== SHA256(oldPassword).toString()) {
+            return res.status(400).json({ msg: 'invalid old password' });
+        }
+        const user = await customerModel.findOneAndUpdate({ _id: userId }, { password: SHA256(password).toString() });
         res.status(200).json(user);
     } catch {
         res.status(500).json({ msg: 'Internal Server Error' });
@@ -50,5 +83,7 @@ const getCustomers = async (req, res) => {
 module.exports = {
     register,
     getInfo,
-    getCustomers
+    getCustomers,
+    changeInfor,
+    changePassword
 }

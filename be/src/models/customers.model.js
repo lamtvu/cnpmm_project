@@ -4,6 +4,7 @@ const customerSchema = new Schema({
     email: { type: String, required: true },
     name: { type: String, required: true },
     phoneNumber: { type: String, required: true },
+    address: { type: String },
     password: { type: String, required: true }
 }, { timestamps: {} })
 

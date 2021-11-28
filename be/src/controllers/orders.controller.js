@@ -2,20 +2,24 @@ const orderModel = require("./../models/orders.model");
 const discountModel = require("./../models/discounts.model");
 const productModel = require("./../models/products.model");
 const { validationResult } = require("express-validator");
+const customerModel = require("../models/customers.model");
 
 const getMoneyDiscount = async (Orders) => {
   const data = await Promise.all(
     Orders.map(async (order) => {
-      const discounts = await discountModel.find({ products: order.product });
-      const totalDiscount = discounts.reduce((previousValue, currentValue) => {
-        return previousValue + currentValue.value;
-      }, 0);
-      const product = await productModel.findById(order.product);
+      const product = await productModel.findById(order.product)
+        .populate({
+          path: 'discount',
+          match: {
+            endDate: { $gte: new Date().getTime() }
+          }
+        })
+      const discount = product.discount ? product.discount.value : 0;
       return {
         product: order.product,
         count: order.count,
-        discount: totalDiscount,
-        price: (product.price - totalDiscount * product.price) * order.count,
+        discount: discount,
+        price: (product.price - discount * product.price) * order.count,
       };
     })
   );
@@ -40,13 +44,12 @@ const createOrder = async (req, res) => {
       return previousValue + currentValue.price;
     }, 0),
   };
-
-  orderModel.create(newOrder, (err) => {
-    if (err) {
-      return res.status(400).json({ status: 400, errors: [{ msg: err }] });
-    }
-    return res.status(200).json({ status: 200, data: null });
-  });
+  try {
+    const orders = await orderModel.insertMany(newOrder);
+    res.status(200).json(orders[0]);
+  } catch {
+    res.status(500).json({msg: 'Internal Server Error'});
+  }
 };
 
 const calculatorOrderPrice = async (req, res) => {
@@ -58,20 +61,19 @@ const calculatorOrderPrice = async (req, res) => {
     const { orders } = req.body;
     const orderPrices = await Promise.all(
       orders.map(async (order) => {
-        const discounts = await discountModel.find({ products: order.product });
-
-        const totalDiscount = discounts.reduce(
-          (previousValue, currentValue) => {
-            return previousValue + currentValue.value;
-          },
-          0
-        );
-        const product = await productModel.findById(order.product);
+        const product = await productModel.findById(order.product)
+          .populate({
+            path: 'discount',
+            match: {
+              endDate: { $gte: new Date().getTime() }
+            }
+          })
+        const discount = product.discount ? product.discount.value : 0;
         return {
           product: product,
           count: order.count,
-          discount: totalDiscount,
-          price: (product.price - totalDiscount * product.price) * order.count,
+          discount: discount,
+          price: (product.price - discount * product.price) * order.count,
         };
       })
     );
@@ -124,6 +126,8 @@ const updateOrder = async (req, res) => {
 const getOrder = (req, res) => {
   orderModel
     .findById(req.params.id)
+    .populate('orders.product')
+    .populate('customer')
     .then((data) => {
       if (!data) {
         res.status(404).send({ msg: "Not found order" });
@@ -139,15 +143,51 @@ const getOrder = (req, res) => {
 };
 
 const getOrders = async (req, res) => {
+  const {
+    limit = 20,
+    page = 0,
+    searchString = '' } = req.query;
+
+  const searchValue = searchString.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(searchValue, "i");
+
+  const ptemp = parseInt(page);
+  const ltemp = parseInt(limit);
+
   try {
-    const orderDetails = await orderModel
-      .find()
-      .populate("orders.product")
-      .populate("customer");
-    console.log(orderDetails);
-    res.status(200).json(orderDetails);
+
+    const items = await orderModel.aggregate([
+      {
+        $lookup: {
+          from: customerModel.collection.name,
+          localField: 'customer',
+          foreignField: '_id',
+          as: 'customer',
+          pipeline: [
+            {
+              $match: { name: { $regex: regex } }
+            }
+          ],
+        }
+      },
+      { $unwind: '$customer' },
+      {
+        $facet: {
+          count: [{ $count: 'count' }],
+          results: [{ $skip: ptemp * ltemp }, { $limit: ltemp }]
+        }
+      },
+      {
+        $addFields: {
+          count: {
+            $arrayElemAt: ['$count.count', 0]
+          }
+        }
+      }
+    ])
+
+    res.status(200).json(items[0]);
   } catch (e) {
-    console.log(e);
     res.status(500).send({ msg: "Internal Server Error" });
   }
 };

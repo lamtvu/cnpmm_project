@@ -19,4 +19,12 @@ customerRoute.get('/',
   authMiddleware.verifyToken,
   customerController.getCustomers);
 
+customerRoute.put('/info',
+  authMiddleware.verifyToken,
+  customerController.changeInfor);
+
+customerRoute.put('/password',
+  authMiddleware.verifyToken,
+  customerController.changePassword);
+
 module.exports = customerRoute;

@@ -15,6 +15,12 @@ discountRoute.delete(
   discountController.deleteDiscount
 );
 
+discountRoute.delete(
+  "/remove-product",
+  authMiddleware.verifyToken,
+  discountController.removeProduct
+);
+
 discountRoute.put(
   "/update/:discountId",
   authMiddleware.verifyToken,
@@ -24,16 +30,23 @@ discountRoute.put(
 discountRoute.get(
   "/get-all",
   authMiddleware.verifyToken,
-  discountController.getDiscount
+  discountController.getDiscounts
 );
 
 discountRoute.get(
-  "/get-discount/:id",
+  "/get-products/:id",
+  authMiddleware.verifyToken,
+  discountController.getProducts
+);
+
+discountRoute.get(
+  '/get-discount/:id',
   authMiddleware.verifyToken,
   discountController.getDiscount
-);
+)
+
 discountRoute.put(
-  "/add-product/:id",
+  "/add-products/:id",
   authMiddleware.verifyToken,
   discountController.addProduct
 );

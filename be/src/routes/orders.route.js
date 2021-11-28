@@ -24,6 +24,7 @@ orderRoute.get(
   authMiddleware.verifyToken,
   orderController.getOrders
 );
+
 orderRoute.get(
   "/my-orders",
   authMiddleware.verifyToken,
