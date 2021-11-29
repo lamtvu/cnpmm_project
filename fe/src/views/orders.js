@@ -71,7 +71,8 @@ const Orders = () => {
                         </thead>
                         <tbody>
                             {orders && orders.items.map(order => (
-                                < tr className={`text-gray-500 font-base border-b-2 border-gray-100 hover:bg-gray-200 ${seleced === order._id && 'bg-gray-100'}`} key={order._id}
+                                < tr className={`text-gray-500 font-base border-b-2 border-gray-100 hover:bg-gray-200
+                                 ${seleced === order._id && 'bg-gray-200'}`} key={order._id}
                                     onClick={() => setSelected(order._id)}>
                                     <td className='w-20 border-r-2 border-gray-100'>{order._id}</td>
                                     <td className='pl-2'>{order.customer?.name}</td>

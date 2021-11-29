@@ -10,15 +10,21 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { getCagtegoriesAction } from '../store/actions/categoriyActions'
 import { getBrandsAction } from '../store/actions/brandAction'
-import { addProductAction, updateProductAction } from '../store/actions/productAction';
+import { updateProductAction } from '../store/actions/productAction';
 import { getProductAPI } from '../api/productApi';
+import NumberFormat from 'react-number-format';
+import Loading from '../components/loading';
+import Products from './products';
 
 const UpdateProduct = () => {
     const categories = useSelector(state => state.categories);
     const brands = useSelector(state => state.brands);
+    const products = useSelector(state => state.products);
+    const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
     let { productId } = useParams();
     const navigate = useNavigate();
+    const [imgSrc, setImgSrc] = useState(null);
 
     const [updateData, setUpdateData] = useState({ value: {}, error: {} })
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -27,15 +33,18 @@ const UpdateProduct = () => {
     useEffect(() => {
         dispatch(getCagtegoriesAction());
         dispatch(getBrandsAction());
-        getCategory();
+        getProduct();
     }, [productId])
 
-    const getCategory = async () => {
+    const getProduct = async () => {
         try {
+            setLoading(true);
             const res = await getProductAPI(productId);
+            setLoading(false);
             const { category, producer } = res.data;
             const categorySelect = { value: category._id, label: category.name };
             const producerSelect = { value: producer._id, label: producer.name };
+            setImgSrc(res.data.image);
             setUpdateData({ ...updateData, value: { ...res.data, category: categorySelect, producer: producerSelect } });
 
             const blocksFromHtml = htmlToDraft(res.data.detail);
@@ -44,9 +53,30 @@ const UpdateProduct = () => {
             const _editorState = EditorState.createWithContent(contentState);
             setEditorState(_editorState);
         } catch (e) {
+            setLoading(false);
             setNotFound(true);
         }
     }
+
+    const onFileChange = (e) => {
+        const file = e.target.files[0]
+        if (!file) return;
+        const temp = {
+            ...updateData,
+            value: {
+                ...updateData.value, image: file
+            }
+        }
+        delete temp.error.image;
+        console.log(temp)
+        setUpdateData(temp)
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+            setImgSrc(reader.result);
+        };
+    }
+
 
     const onEditorChange = (e) => {
         setEditorState(e)
@@ -84,14 +114,15 @@ const UpdateProduct = () => {
             setUpdateData({ ...updateData, error: { ...updateData.error, image: 'requied' } });
             return;
         }
-        dispatch(updateProductAction(updateData.value._id,
-            {
-                ...updateData.value,
-                category: updateData.value.category.value,
-                producer: updateData.value.producer.value,
-                detail: draftToHtml(convertToRaw(editorState.getCurrentContent()))
-            }));
-        navigate('/admin/products')
+        const fd = new FormData();
+        fd.append('name', updateData.value.name);
+        fd.append('description', updateData.value.description);
+        fd.append('price', updateData.value.price);
+        fd.append('category', updateData.value.category.value);
+        fd.append('producer', updateData.value.producer.value);
+        fd.append('image', updateData.value.image);
+        fd.append('detail', draftToHtml(convertToRaw(editorState.getCurrentContent())));
+        dispatch(updateProductAction(updateData.value._id, fd, () => navigate('/admin/products')));
     }
 
     return (
@@ -106,11 +137,20 @@ const UpdateProduct = () => {
                     products management / Update Product
                 </div>
             </div>
+            {loading && <Loading />}
             {notFound ? <div className='text-xl font-semibold text-gray-600 p-4'>
                 NOT FOUND
             </div> : (
                 <div className='px-6 xl:px-16 inline-block'>
                     <div className='my-4'>
+                        <div className='py-2'>
+                            <div className='text-md font-semibold capitalize'>image*:</div>
+                            {imgSrc && <img className='w-96' src={imgSrc} alt='productImgae' />}
+                            <label className='inline-block px-4 py-2 bg-gray-50 rounded-md shadow-md  hover:bg-gray-100 hover:shadow-lg'>
+                                upload
+                                <input hidden type="file" name="file" onChange={onFileChange} accept='image/png, image/jpeg' />
+                            </label>
+                        </div>
                         <div className='py-2 flex'>
                             <label className='py-4'>
                                 <div className='text-md font-semibold capitalize'>Product Name*:</div>
@@ -190,12 +230,13 @@ const UpdateProduct = () => {
                                     Price*:
                                     {updateData.error.price && <span className='text-red-500'> required</span>}
                                 </div>
-                                <input type="number" name="price"
-                                    autoComplete="off"
+
+                                <NumberFormat
+                                    thousandSeparator={true}
+                                    onValueChange={(e) => changeDataValue('price', e.value)}
                                     value={updateData?.value?.price || 0}
-                                    onChange={(e) => changeDataValue('price', e.target.value)}
                                     className='outline-none border-2 rounded-md py-1 px-2' />
-                                <span className='ml-1'>vnd</span>
+                                <span> vnd</span>
                             </label>
                         </div>
                         <div className='py-2'>
@@ -211,6 +252,8 @@ const UpdateProduct = () => {
                             {Object.keys(updateData.error).length > 0 && <div name='errors' className='text-red-600 text-base font-semibold'>
                                 Fill in all input fields
                             </div>}
+                            {products?.loading && <Loading />}
+                            {/* <Loading/> */}
                             <button
                                 onClick={updateHandler}
                                 className='w-52 py-2 bg-gray-50 shadow-md hover:bg-gray-100 hover:shadow-lg'>

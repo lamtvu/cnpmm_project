@@ -91,8 +91,8 @@ const Products = () => {
                         <tbody>
                             {products && products.items.map(product => {
                                 return (
-                                    <tr className={`p-4 text-md border-b-2 ${selected?._id === product._id && 'bg-gray-100'}
-                                border-gray-100 hover:bg-gray-50`} key={product._id}
+                                    <tr className={`p-4 text-md border-b-2 ${selected?._id === product._id && 'bg-gray-200'}
+                                border-gray-200 hover:bg-gray-200`} key={product._id}
                                         onClick={() => setSelected(product)}>
                                         <td className='border-r-2 border-gray-100'>{product._id}</td>
                                         <td className='pl-2'>{

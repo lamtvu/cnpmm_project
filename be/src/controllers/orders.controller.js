@@ -32,7 +32,6 @@ const createOrder = async (req, res) => {
     return res.status(400).json({ status: 400, ...errors });
   }
   const orders = await getMoneyDiscount(req.body.orders);
-  console.log(orders);
   const newOrder = {
     customer: req.userData._id,
     address: req.body.address,

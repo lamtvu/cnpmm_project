@@ -50,7 +50,6 @@ export const getMyOrdersAction = () => {
         dispatch(requestOrder());
         try {
             const res = await getMyOrdersAPI();
-            console.log(res.data)
             dispatch(myOrderSuccess(res.data));
         } catch (err) {
             dispatch(orderError('orders load failed'));
@@ -65,7 +64,7 @@ export const createOrderAction = (data, navigate) => {
             const res = await createOrderAPI(data);
             dispatch(getMyOrdersAction());
             localStorage.removeItem('orderProducts');
-            navigate('/user/order-detail/' + res.data._id, {state: {msg: 'Successful Order'}})
+            navigate('/user/order-detail/' + res.data._id, {state: {msg: 'Successful Order, Thank you for your orders'}})
         } catch (err) {
             dispatch(orderError('orders load failed'));
         }

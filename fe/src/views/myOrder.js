@@ -12,7 +12,7 @@ const MyOrder = () => {
     }, [])
 
     return (
-        <div className='bg-gray-100 border-b-2 min-h-screen'>
+        <div className='bg-gray-100 border-b-2 min-h-screen pb-4'>
             <div className='px-6 xl:px-16'>
                 <div className='p-4 capitalize font-semibold text-xl text-gray-600 w-full'>My Order</div>
                 <div className='bg-white grid-cols-5 grid mt-4 capitalize font-semibold'>

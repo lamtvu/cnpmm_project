@@ -10,3 +10,8 @@ export const numberToPrice = (value) => {
     }
     return str.slice(0, -1)
 }
+
+export const formatStringLength = (value) => {
+    if (value.length < 50) return value;
+    return `${value.slice(0, 50)}...`;
+}

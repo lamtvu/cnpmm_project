@@ -30,6 +30,7 @@ const CreateProduct = () => {
 
     const onFileChange = (e) => {
         const file = e.target.files[0]
+        if(!file) return;
         const temp = {
             ...createData,
             value: {
@@ -124,7 +125,7 @@ const CreateProduct = () => {
                         <div className='text-md font-semibold capitalize'>image*:
                             {createData.error.image && <span className='text-red-500'> required</span>}
                         </div>
-                        {imgSrc && <img className='w-96 h-96' src={imgSrc} alt='productImgae' />}
+                        {imgSrc && <img className='w-96' src={imgSrc} alt='productImgae' />}
                         <label className='inline-block px-4 py-2 bg-gray-50 rounded-md shadow-md  hover:bg-gray-100 hover:shadow-lg'>
                             upload
                             <input hidden type="file" name="file" onChange={onFileChange} accept='image/png, image/jpeg' />
@@ -206,7 +207,8 @@ const CreateProduct = () => {
                                 {createData.error.price && <span className='text-red-500'> required</span>}
                             </div>
                             <NumberFormat thousandSeparator={true} onValueChange={(e) => changeCreateDataValue('price', e.value)}
-                                prefix={'vnd'} className='outline-none border-2 rounded-md py-1 px-2' />
+                            className='outline-none border-2 rounded-md py-1 px-2' />
+                            <span> vnd</span>
                         </label>
                     </div>
                     <div className='py-2'>
@@ -223,7 +225,7 @@ const CreateProduct = () => {
                             <div name='errors' className='text-white text-base font-semibold bg-red-400 p-3 rounded-sm'>
                                 Fill in all input fields
                             </div>)}
-                        {products.loading && <Loading />}
+                        {products?.loading && <Loading />}
                         <button
                             onClick={createHandler}
                             className='w-52 py-2 bg-gray-50 shadow-md hover:bg-gray-100 hover:shadow-lg'>

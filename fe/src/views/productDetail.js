@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom'
 import { getProductAPI } from '../api/productApi';
+import Loading from '../components/loading';
 import { numberToPrice } from '../services/formatService';
 import { openCartMsgAction } from '../store/actions/cartMsgAction';
 
@@ -9,16 +10,20 @@ const ProductDetail = () => {
     const { productId } = useParams();
     const [product, setProduct] = useState(null);
     const [notFound, setNotFound] = useState(false);
+    const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
+        window.scrollTo(0, 0)
         getProduct();
     }, [])
 
     const getProduct = async () => {
         try {
+            setLoading(true);
             const res = await getProductAPI(productId);
+            setLoading(false);
             setProduct(res.data);
         } catch {
             setNotFound(true);
@@ -37,14 +42,17 @@ const ProductDetail = () => {
             _product.count = _product.count + 1;
             localStorage.setItem('orderProducts', JSON.stringify([...orderProducts]));
             dispatch(openCartMsgAction());
+            window.scrollTo(0, 0)
             return;
         }
         localStorage.setItem('orderProducts', JSON.stringify([...orderProducts, { product: productId, count: 1 }]));
+        window.scrollTo(0, 0)
         dispatch(openCartMsgAction());
     }
 
     return (
         <div className='px-6 xl:px-28 py-10 bg-gray-100 min-h-screen text-gray-500'>
+            {loading && <Loading />}
             {product && (
                 <div>
                     <div className='grid grid-cols-3 gap-8 w-full p-4 bg-white'>

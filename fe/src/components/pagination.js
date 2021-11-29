@@ -41,6 +41,7 @@ const Pagination = ({ totalRecords = 0, onPageChange }) => {
     }
 
     const onSelect = (e) => {
+        onPageChange && onPageChange({ ...paginationState, pageLength: e.value, page: 0 });
         setPaginationState({ ...paginationState, pageLength: e.value, page: 0 })
     }
 

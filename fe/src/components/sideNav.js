@@ -11,7 +11,7 @@ const SideNav = ({ title, items, ...rest }) => {
                         <NavLink to={item.link}
                             className={({ isActive }) => {
                                 return `block p-4 hover:bg-gray-100
-                                ${isActive && 'bg-gray-100'}`
+                                ${isActive && 'bg-gray-200'}`
                             }}
                         >{item.label}</NavLink>
                     </div>

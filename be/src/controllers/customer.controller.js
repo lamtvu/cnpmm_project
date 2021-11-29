@@ -71,11 +71,21 @@ const getCustomers = async (req, res) => {
         ]
     }
 
+    const ptemp = parseInt(page);
+    const ltemp = parseInt(limit);
     try {
-        const customers = await customerModel.find(searchString ? query : null)
-            .sort({ createdAt: 1 }).skip(page * limit).limit(limit);
-        res.status(200).json(customers);
-    } catch {
+        const customers = await customerModel
+            .aggregate()
+            .match(query)
+            .facet({
+                count: [{ $count: 'count' }],
+                results: [{ $skip: ltemp * ptemp }, { $limit: ltemp }]
+            })
+            .addFields({
+                count: { $arrayElemAt: ['$count.count', 0] }
+            })
+        res.status(200).json(customers[0]);
+    } catch(e) {
         res.status(500).json({ msg: 'Internal Server Error' });
     }
 }

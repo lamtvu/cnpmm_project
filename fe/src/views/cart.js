@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -8,17 +8,20 @@ import Loading from '../components/loading';
 import { numberToPrice } from '../services/formatService';
 import { cartMsgClose } from '../store/actions/cartMsgAction';
 import { createOrderAction } from '../store/actions/orderAction';
-import { userChangeInfoAction } from '../store/actions/userAction';
 import AddressDialog from './addressDialog'
 
 const Cart = () => {
     const [cookies] = useCookies(['auth']);
     const [orderInfo, setOrderInfo] = useState({ address: '', receiver: '', phoneReceiver: '' });
     const user = useSelector(state => state.user);
+    const orderState = useSelector(state=>state.orders);
     const [errorInfo, setErrorInfo] = useState('');
     const [orderDetail, setOrderDetail] = useState(null);
     const [orders, setOrders] = useState(null)
     const [dialog, setDialog] = useState({ show: false, value: null });
+    const [confirmDialog, setConfirmDialog] = useState(false);
+    const [inputConfirm, setInputconfirm] = useState('');
+    const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -46,8 +49,9 @@ const Cart = () => {
 
     const calculator = async (_orders) => {
         try {
+            setLoading(true);
             const res = await calculatorAPI(_orders);
-            console.log(res.data)
+            setLoading(false);
             setOrderDetail(res.data)
         } catch {
             console.log('error to load orders')
@@ -73,7 +77,7 @@ const Cart = () => {
         setOrders([...orders])
     }
 
-    const orderHanler = () => {
+    const onOrder = () => {
         if (!cookies.auth) {
             navigate('/login', { state: { msg: "please, login to continute", status: 0, continue: '/cart' } })
         }
@@ -88,6 +92,10 @@ const Cart = () => {
             return;
         }
 
+        setConfirmDialog(true);
+    }
+
+    const orderHanler = () => {
         dispatch(createOrderAction({ ...orderInfo, orders: orders }, navigate));
     }
 
@@ -105,6 +113,26 @@ const Cart = () => {
                     </div>
                 </div>
             </Dialog>
+            <Dialog show={confirmDialog} onTurnOff={() => { setConfirmDialog(false) }}>
+                <div className='text-xl font-semibold pb-4'>Waiting for your delivery comfirmation</div>
+                <div className='text-md'><span className='font-semibold'>Total bill: </span> ${numberToPrice(orderDetail?.totalPrice)}</div>
+                <div className='text-md'><span className='font-semibold'>Payment method: </span> pay on receipt</div>
+                <div className='text-md font-semibold text-yellow-500'>After placing an order, it cannot be canceled!</div>
+                <div className='py-3'>
+                    <p>Enter <span className='font-semibold'>'confirm'</span> in the box below to confirm</p>
+                    <input className='px-2 border-2 border-gray-400 rounded-md focus:outline-none'
+                        onChange={(e) => setInputconfirm(e.target.value)}
+                        value={inputConfirm} />
+                </div>
+                {orderState?.loading && <Loading/> }
+                <div className='flex gap-4 justify-around mt-4'>
+                    <button className={`focus: outline-none py-1 px-4 shadow-md
+                    ${inputConfirm === 'confirm' ? 'bg-yellow-400 hover:bg-yellow-500' : 'bg-yellow-200'} rounded-md text-white`}
+                        onClick={() => { inputConfirm === 'confirm' && orderHanler() }}>Confirm</button>
+                    <button className='focus:outline-none py-1 px-4 shadow-md bg-gray-100 hover:shadow-xl'
+                        onClick={() => setConfirmDialog(false)}>Cancel</button>
+                </div>
+            </Dialog >
             <div className='px-6 xl:px-16'>
                 <div className='p-4 capitalize font-semibold text-xl text-gray-600 w-full'>shopping cart</div>
                 {orders?.length > 0 ? <div className='grid grid-cols-3 gap-4'>
@@ -115,6 +143,7 @@ const Cart = () => {
                             <div>Amount</div>
                             <div>Total</div>
                         </div>
+                        {loading && <Loading />}
 
                         {orderDetail && orderDetail.orders.map((o, index) => {
                             const { product } = o;
@@ -191,11 +220,11 @@ const Cart = () => {
                             </div>
                         </div>
                         <div className='text-red-500 font-semibold' >{errorInfo}</div>
-                        <div className='mt-4 bg-white font-semibold text-gray-500 p-3 text-center shadow-md hover:shadow-lg text-md '
-                            onClick={orderHanler}>
-                            {orderDetail?.loading && <Loading />}
+                        {orderDetail && <div className='mt-4 bg-white font-semibold text-gray-500 p-3 text-center shadow-md hover:shadow-lg text-md '
+                            onClick={onOrder}>
+                            {orderDetail.loading && <Loading />}
                             Order
-                        </div>
+                        </div>}
                     </div>
                 </div> : (
                     <div className='text-xl font-semibold text-center'>
@@ -207,7 +236,7 @@ const Cart = () => {
                 )}
 
             </div>
-        </div>
+        </div >
     )
 }
 

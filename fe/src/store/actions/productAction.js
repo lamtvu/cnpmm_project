@@ -144,18 +144,15 @@ export const addProductAction = (product, successCallBack) => {
     }
 }
 
-export const updateProductAction = (id, product) => {
+export const updateProductAction = (id, product, successCallBack) => {
     return async (dispatch, getState) => {
         dispatch(productRequest());
         try {
             const productState = getState().products;
             await updateProductAPI(id, product);
-            dispatch(productSuccess());
+            dispatch(searchProductsAction(productState.query));
             dispatch(turnOnMessageAction('GOBAL', 'successful update'))
-            if (productState.type === 'GET')
-                dispatch(getProductsAction(productState.query));
-            else
-                dispatch(searchProductsAction(productState.query));
+            successCallBack && successCallBack();
         } catch (err) {
             if (err.response) {
                 dispatch(productError(err.response.data.msg));

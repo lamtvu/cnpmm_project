@@ -44,7 +44,7 @@ const updateProduct = async (req, res) => {
 		return res.status(400).send({ msg: "Data to update can not empty" });
 	}
 	const productId = req.params.productId;
-	if (req.files["image"] != null) {
+	if (req.files.image != null) {
 		var addImage = req.files["image"][0];
 		const urlImage = await uploadImage(addImage.filename, "upload/");
 		req.body.image = urlImage;
@@ -111,7 +111,6 @@ const getProducts = async (req, res) => {
 
 	const ptemp = parseInt(page);
 	const ltemp = parseInt(limit);
-	console.log(new Date().getTime())
 	try {
 		const products = await productModel
 			.find(query)
@@ -128,7 +127,6 @@ const getProducts = async (req, res) => {
 			})
 		res.status(200).json(products);
 	} catch (e) {
-		console.log(e);
 		res.status(500).json({ msg: "Internal Server Error" });
 	}
 };
