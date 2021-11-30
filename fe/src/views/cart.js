@@ -14,7 +14,7 @@ const Cart = () => {
     const [cookies] = useCookies(['auth']);
     const [orderInfo, setOrderInfo] = useState({ address: '', receiver: '', phoneReceiver: '' });
     const user = useSelector(state => state.user);
-    const orderState = useSelector(state=>state.orders);
+    const orderState = useSelector(state => state.orders);
     const [errorInfo, setErrorInfo] = useState('');
     const [orderDetail, setOrderDetail] = useState(null);
     const [orders, setOrders] = useState(null)
@@ -124,7 +124,7 @@ const Cart = () => {
                         onChange={(e) => setInputconfirm(e.target.value)}
                         value={inputConfirm} />
                 </div>
-                {orderState?.loading && <Loading/> }
+                {orderState?.loading && <Loading />}
                 <div className='flex gap-4 justify-around mt-4'>
                     <button className={`focus: outline-none py-1 px-4 shadow-md
                     ${inputConfirm === 'confirm' ? 'bg-yellow-400 hover:bg-yellow-500' : 'bg-yellow-200'} rounded-md text-white`}
@@ -209,7 +209,7 @@ const Cart = () => {
                                 Discount:
                                 <span className='text-xl font-normal'> {numberToPrice(orderDetail?.orders?.reduce((total, o) => {
                                     if (o.discount)
-                                        return total + o.discount * o.price
+                                        return total + (o.price / (1 - o.discount)) - o.price
                                     else
                                         return total
                                 }, 0))} vnd</span>
