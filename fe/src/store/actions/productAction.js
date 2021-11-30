@@ -88,6 +88,10 @@ export const getProductsAction = (query) => {
         try {
             const res = await getProductsAPI(query, products.limit, 0);
             console.log(res.data)
+            if (res.data.length < products.limit) {
+                dispatch(productStopPage(res.data));
+                return;
+            }
             dispatch(productGet(res.data, query));
         } catch (err) {
             if (err.response) {
@@ -107,7 +111,6 @@ export const nextPageAction = () => {
         try {
             const res = await getProductsAPI(query, limit, page + 1);
             if (res.data.length < limit) {
-                console.log('stop');
                 dispatch(productStopPage(res.data));
                 return;
             }

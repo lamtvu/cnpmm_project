@@ -98,7 +98,6 @@ const Shop = () => {
                     </div>
                 </div>}
                 {products.page !== -1 && !products.loading && <Waypoint className='bg-gray-700 p-4' onEnter={() => {
-                    console.log('next')
                     dispatch(nextPageAction())
                 }} />}
             </div>
