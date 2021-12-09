@@ -2,12 +2,12 @@
 
 ## Thành viên:
 
-Vũ Thanh Lâm - 18110142
+Vũ Thanh Lâm - 18110142/
 Lê Hoàng Nam - 18110160
 
-## Hướng dẫn cài đặc:
+## Hướng dẫn cài đặt:
 
-## Trước tiên bạn phải clone(hoặc tải) project về máy
+- Trước tiên bạn phải clone(hoặc tải) project về máy
 
 ---
 
