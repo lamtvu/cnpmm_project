@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { getProductAPI } from '../api/productApi';
 import Loading from '../components/loading';
 import { numberToPrice } from '../services/formatService';
@@ -12,7 +12,6 @@ const ProductDetail = () => {
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     useEffect(() => {
         window.scrollTo(0, 0)

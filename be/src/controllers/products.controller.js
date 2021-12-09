@@ -1,6 +1,7 @@
 const productModel = require("./../models/products.model");
 const { validationResult } = require("express-validator");
 const { uploadImage } = require("../services/uploadimage.service");
+const mongoose = require('mongoose')
 
 const createProduct = async (req, res) => {
 	const errors = validationResult(req);
@@ -91,42 +92,62 @@ const getProduct = (req, res) => {
 };
 
 const getProducts = async (req, res) => {
-	const { categories, producers, fromPrice, toPrice, sort } = req.body;
+	const { categories, producers } = req.body;
 
 	const { limit = 20, page = 0 } = req.query;
 
-	const sortQuery = sort || { createdAt: 1 };
 	let query = {};
 	if (categories && categories.length > 0)
-		query = { ...query, category: { $in: categories } };
+		query = { ...query, category: { $in: categories.map(c => mongoose.Types.ObjectId(c)) } };
 	if (producers && producers.length > 0)
-		query = { ...query, producer: { $in: producers } };
-	if (fromPrice && toPrice)
-		query = {
-			...query, price: {
-				$gte: parseInt(fromPrice),
-				$lte: parseInt(toPrice)
-			}
-		};
+		query = { ...query, producer: { $in: producers.map(p => mongoose.Types.ObjectId(p)) } };
 
 	const ptemp = parseInt(page);
 	const ltemp = parseInt(limit);
+
+	console.log(query)
 	try {
-		const products = await productModel
-			.find(query)
-			.sort(sortQuery)
-			.skip(ptemp * ltemp)
-			.limit(ltemp)
-			.populate("category")
-			.populate("producer")
-			.populate({
-				path: 'discount',
-				match: {
-					endDate: { $gte: new Date().getTime() }
-				}
+		const items = await productModel
+			.aggregate()
+			.match(query)
+			.lookup({ from: 'categories', localField: 'category', foreignField: '_id', as: 'category' })
+			.lookup({ from: 'producers', localField: 'producer', foreignField: '_id', as: 'producer' })
+			.lookup({
+				from: 'discounts',
+				let: { 'ed': '$endDate', 'dc': '$discount' },
+				pipeline: [
+					{
+						$match: {
+							$expr: {
+								$and: [
+									{ $eq: ['$$dc', '$_id'] },
+									{ $lt: ['$$ed', new Date().getTime()] },
+								]
+							}
+						}
+					}
+				],
+				as: 'discount'
 			})
-		res.status(200).json(products);
+			.unwind(
+				'category',
+				'producer',
+				{
+					path: '$discount',
+					preserveNullAndEmptyArrays: true
+				})
+			.facet({
+				count: [{ $count: 'count' }],
+				results: [{ $skip: ltemp * ptemp }, { $limit: ltemp }]
+			})
+			.addFields({
+				count: { $arrayElemAt: ['$count.count', 0] }
+			})
+		console.log(items[0])
+
+		res.status(200).json(items[0]);
 	} catch (e) {
+		console.log(e)
 		res.status(500).json({ msg: "Internal Server Error" });
 	}
 };

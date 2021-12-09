@@ -43,8 +43,8 @@ const Home = () => {
                     </div>
                 </div>
                 <div className='w-full bg-gray-200 h-0.5' ref={scrollRef}></div>
-                <Shop initBrand={init.brand} initCategory={init.category} />
             </div>
+            <Shop initBrand={init.brand} initCategory={init.category} />
         </div >
     )
 }

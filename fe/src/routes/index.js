@@ -22,6 +22,8 @@ import CreateDiscount from '../views/createDiscount';
 import EditDiscount from '../views/editDiscount';
 import ChangeInfor from '../views/changeInfor';
 import ChangePassword from '../views/changePassword';
+import Shop from '../components/shop';
+import ShopSearch from '../components/shopSearch';
 
 export const mainRoutes = (auth) => [
     { path: '/home', element: <Navigate to='/' /> },
@@ -33,6 +35,8 @@ export const mainRoutes = (auth) => [
         children: [
             { path: '', element: <Home /> },
             { path: 'cart', element: <Cart /> },
+            { path: 'products', element: <Shop /> },
+            { path: 'products-search/:searchStr', element: <ShopSearch /> },
             { path: 'product/:productId', element: <ProductDetail /> },
             { path: '*', element: <Navigate to='/404' /> }
         ]

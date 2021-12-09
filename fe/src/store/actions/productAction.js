@@ -3,7 +3,6 @@ import { turnOnMessageAction } from "./messageAction";
 
 export const PRODUCT_REQUEST = 'PRODUCT_REQUEST';
 export const PRODUCT_ERROR = 'PRODUCT_ERROR';
-export const PRODUCT_NEXTPAGE = 'PRODUCT_NEXTPAGE';
 export const PRODUCT_STOPPAGE = 'PRODUCT_STOPPAGE';
 export const PRODUCT_SEARCH = 'PRODUCT_SEARCH';
 export const PRODUCT_GET = 'PRODUCT_GET';
@@ -29,10 +28,10 @@ const productSearch = (products, query, limit) => {
     }
 }
 
-const productGet = (products, query) => {
+const productGet = (products, query, limit) => {
     return {
         type: PRODUCT_GET,
-        payload: { products, query }
+        payload: { ...products, query, limit }
     }
 }
 
@@ -43,19 +42,6 @@ const productError = (msg) => {
     }
 }
 
-const productNextPage = (products) => {
-    return {
-        type: PRODUCT_NEXTPAGE,
-        payload: products
-    }
-}
-
-const productStopPage = (products) => {
-    return {
-        type: PRODUCT_STOPPAGE,
-        payload: products
-    }
-}
 
 export const clearProducts = () => {
     return {
@@ -80,44 +66,15 @@ export const searchProductsAction = (searchString, page, limit) => {
     }
 }
 
-export const getProductsAction = (query) => {
+export const getProductsAction = (query, page, limit) => {
     return async (dispatch, getState) => {
         dispatch(productRequest());
-        const state = getState();
-        const products = state.products;
         try {
-            const res = await getProductsAPI(query, products.limit, 0);
-            console.log(res.data)
-            if (res.data.length < products.limit) {
-                dispatch(productStopPage(res.data));
-                return;
-            }
-            dispatch(productGet(res.data, query));
+            const res = await getProductsAPI(query, limit, page);
+            dispatch(productGet(res.data, query, limit));
         } catch (err) {
             if (err.response) {
                 dispatch(productError(err.response.data.msg))
-                return;
-            }
-            dispatch(productError('Network Error'));
-        }
-    }
-}
-
-export const nextPageAction = () => {
-    return async (dispatch, getState) => {
-        const products = getState().products;
-        const { query, limit, page } = products;
-        dispatch(productRequest());
-        try {
-            const res = await getProductsAPI(query, limit, page + 1);
-            if (res.data.length < limit) {
-                dispatch(productStopPage(res.data));
-                return;
-            }
-            dispatch(productNextPage(res.data));
-        } catch (err) {
-            if (err.response) {
-                dispatch((err.response.data.msg))
                 return;
             }
             dispatch(productError('Network Error'));
