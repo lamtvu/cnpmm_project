@@ -114,14 +114,14 @@ const getProducts = async (req, res) => {
 			.lookup({ from: 'producers', localField: 'producer', foreignField: '_id', as: 'producer' })
 			.lookup({
 				from: 'discounts',
-				let: { 'ed': '$endDate', 'dc': '$discount' },
+				let: { 'dc': '$discount' },
 				pipeline: [
 					{
 						$match: {
 							$expr: {
 								$and: [
 									{ $eq: ['$$dc', '$_id'] },
-									{ $lt: ['$$ed', new Date().getTime()] },
+									{ $gte: ['$endDate', new Date().getTime()] },
 								]
 							}
 						}
@@ -173,14 +173,14 @@ const searchProducts = async (req, res) => {
 			.lookup({ from: 'producers', localField: 'producer', foreignField: '_id', as: 'producer' })
 			.lookup({
 				from: 'discounts',
-				let: { 'ed': '$endDate', 'dc': '$discount' },
+				let: { 'dc': '$discount' },
 				pipeline: [
 					{
 						$match: {
 							$expr: {
 								$and: [
 									{ $eq: ['$$dc', '$_id'] },
-									{ $lt: ['$$ed', new Date().getTime()] },
+									{ $gte: ['$endDate', new Date().getTime()] },
 								]
 							}
 						}
@@ -202,6 +202,8 @@ const searchProducts = async (req, res) => {
 			.addFields({
 				count: { $arrayElemAt: ['$count.count', 0] }
 			})
+
+		console.log(items[0])
 		res.status(200).json(items[0]);
 	} catch (e) {
 		res.status(500).json({ msg: "Internal Server Error" });

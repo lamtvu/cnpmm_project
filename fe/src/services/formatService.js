@@ -1,14 +1,26 @@
 export const numberToPrice = (value) => {
-    if (value < 999)
+    if(!value) return;
+    let str = value.toString();
+    if (str.length < 4)
         return value
-    let str = '';
-    while (value) {
-        const temp = value % 1000;
-        if (temp !== 0) str = `${Math.trunc(temp)},${str}`;
-        else str = `000,${str}`;
-        value = Math.trunc(value / 1000);
+
+    let result = '';
+    const length = str.length;
+    const total = Math.trunc(length / 3) + 1;
+    let countDot = 1;
+    while (countDot <= total) {
+        let start = str.length - 3 * countDot
+        let end = str.length - 3 * (countDot - 1)
+        if(end === 0) break;
+        if(start < 0) start = 0;
+        if (result)
+            result = str.substring(start, end) + ',' + result;
+        else
+            result = str.substring(start, end);
+        countDot++;
     }
-    return str.slice(0, -1)
+    return result
+
 }
 
 export const formatStringLength = (value) => {
