@@ -171,7 +171,30 @@ const searchProducts = async (req, res) => {
 			})
 			.lookup({ from: 'categories', localField: 'category', foreignField: '_id', as: 'category' })
 			.lookup({ from: 'producers', localField: 'producer', foreignField: '_id', as: 'producer' })
-			.unwind('category', 'producer')
+			.lookup({
+				from: 'discounts',
+				let: { 'ed': '$endDate', 'dc': '$discount' },
+				pipeline: [
+					{
+						$match: {
+							$expr: {
+								$and: [
+									{ $eq: ['$$dc', '$_id'] },
+									{ $lt: ['$$ed', new Date().getTime()] },
+								]
+							}
+						}
+					}
+				],
+				as: 'discount'
+			})
+			.unwind(
+				'category',
+				'producer',
+				{
+					path: '$discount',
+					preserveNullAndEmptyArrays: true
+				})
 			.facet({
 				count: [{ $count: 'count' }],
 				results: [{ $skip: ltemp * ptemp }, { $limit: ltemp }]
